@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>飞鸟图鉴 - AI × 飞鸟保护</title>
+  <link rel="stylesheet" href="_shared/css/style.css">
+  <style>
+    /* 覆盖 initCommon 设置的 body padding，改用内容区 margin-top */
+    body { padding-top: 0 !important; }
+
+    /* ---- 页面 Hero ---- */
+    .page-hero {
+      margin-top: calc(var(--nav-height) + 44px);
+      position: relative;
+      padding: 96px 0 88px;
+      background: linear-gradient(135deg, #1a3a2e 0%, #2F5D50 50%, #3a6b5c 100%);
+      overflow: hidden;
+    }
+    .page-hero .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .page-hero .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(217, 154, 61, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(93, 140, 131, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+      animation: fadeInUp 1s ease-out;
+    }
+    .page-hero-content .section-tag {
+      color: var(--accent-light);
+      margin-bottom: 16px;
+    }
+    .page-hero-content h1 {
+      color: #fff;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    }
+    .page-hero-content .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .filter-bar .filter-group label {
+      white-space: nowrap;
+    }
+
+    .result-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .result-count {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .result-count strong {
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+    .no-results .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    .no-results p {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .birds-section { padding-bottom: 40px; }
+
+    .intro-bridge .btn { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div id="story-nav-placeholder"></div>
+
+  <!-- ============ Hero ============ -->
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-birds">
+      <div class="hero-bird" style="top:22%;animation-duration:28s;animation-delay:0s;">
+        <svg width="38" height="18" viewBox="0 0 38 18" fill="none"><path d="M2 9 Q9 2 19 9 Q29 2 36 9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="hero-bird" style="top:48%;animation-duration:36s;animation-delay:6s;">
+        <svg width="28" height="14" viewBox="0 0 28 14" fill="none"><path d="M2 7 Q7 2 14 7 Q21 2 26 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="hero-bird" style="top:14%;animation-duration:33s;animation-delay:12s;">
+        <svg width="42" height="20" viewBox="0 0 42 20" fill="none"><path d="M2 10 Q11 3 21 10 Q31 3 40 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="container">
+      <div class="page-hero-content">
+        <span class="section-tag">故事线 01 · 认识它</span>
+        <h1>飞鸟图鉴</h1>
+        <p class="hero-subtitle">11 种代表性飞鸟，从城市到荒野，认识它们是保护的第一步。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 48px;">
+   <div class="container">
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索鸟名、英文名或学名...">
+      <div class="filter-group">
+        <label>栖息地</label>
+        <select class="filter-select" id="habitatSelect">
+          <option value="all">全部</option>
+          <option value="城市">城市</option>
+          <option value="湿地">湿地</option>
+          <option value="林地">林地</option>
+          <option value="山区">山区</option>
+          <option value="滩涂">滩涂</option>
+          <option value="湖泊">湖泊</option>
+          <option value="河流">河流</option>
+          <option value="草原">草原</option>
+          <option value="公园">公园</option>
+          <option value="农田">农田</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>保护等级</label>
+        <select class="filter-select" id="protectionSelect">
+          <option value="all">全部</option>
+          <option value="1">国家一级保护</option>
+          <option value="2">国家二级保护</option>
+          <option value="3">三有保护动物</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="birds-section">
+      <div class="result-meta">
+        <div class="result-count" id="resultCount"></div>
+        <button class="btn btn-ghost btn-sm" id="resetBtn" style="display:none;">重置筛选</button>
+      </div>
+
+      <div class="grid grid-3" id="birdGrid"></div>
+
+      <div class="no-results" id="noResults" style="display:none;">
+        <div class="no-results-icon">🔍</div>
+        <p>没有找到符合条件的鸟类</p>
+        <p style="font-size:0.9rem;">试试调整筛选条件或重置筛选</p>
+      </div>
+    </div>
+
+    <div class="intro-bridge">
+      <h3>每一种鸟都是生态系统中不可替代的一员</h3>
+      <p>了解它们的栖息地，是保护的下一步</p>
+      <a href="protection.html" class="btn btn-primary">探索保护地 →</a>
+    </div>
+   </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <script src="_shared/js/birds-data.js"></script>
+  <script src="_shared/js/nav.js"></script>
+  <script>
+    initCommon('birds', 0);
+
+    var grid = document.getElementById('birdGrid');
+    var noResults = document.getElementById('noResults');
+    var resultCount = document.getElementById('resultCount');
+    var resetBtn = document.getElementById('resetBtn');
+    var searchInput = document.getElementById('searchInput');
+    var habitatSelect = document.getElementById('habitatSelect');
+    var protectionSelect = document.getElementById('protectionSelect');
+
+    /* 自定义筛选：栖息地使用部分匹配，使"河流"能匹配"山区河流"等 */
+    function customFilterBirds(birds, options) {
+      var search = options.search || '';
+      var habitat = options.habitat || 'all';
+      var protection = options.protection || 'all';
+      var s = search.toLowerCase();
+      return birds.filter(function (bird) {
+        var matchSearch = !search ||
+          bird.name.indexOf(search) !== -1 ||
+          bird.englishName.toLowerCase().indexOf(s) !== -1 ||
+          bird.scientificName.toLowerCase().indexOf(s) !== -1;
+        var matchHabitat = habitat === 'all' ||
+          bird.habitat.some(function (h) { return h.indexOf(habitat) !== -1; });
+        var matchProtection = protection === 'all' ||
+          bird.protectionLevel === parseInt(protection);
+        return matchSearch && matchHabitat && matchProtection;
+      });
+    }
+
+    function renderBirdCards(birds) {
+      if (birds.length === 0) {
+        grid.innerHTML = '';
+        noResults.style.display = 'block';
+        resultCount.innerHTML = '找到 <strong>0</strong> 种鸟类';
+        return;
+      }
+      noResults.style.display = 'none';
+      resultCount.innerHTML = '找到 <strong>' + birds.length + '</strong> 种鸟类';
+
+      grid.innerHTML = birds.map(function (bird) {
+        var prot = PROTECTION_LEVELS[bird.protectionLevel];
+        var habitatTags = bird.habitat.map(function (h) {
+          return '<span class="tag tag-habitat">' + h + '</span>';
+        }).join('');
+        return '' +
+          '<a href="bird-detail.html?id=' + bird.id + '" class="bird-card">' +
+            '<div class="bird-card-img">' + getBirdImage(bird) + '</div>' +
+            '<div class="bird-card-body">' +
+              '<h3>' + getBirdNameWithPinyin(bird) + '</h3>' +
+              '<div class="bird-sci">' + bird.scientificName + '</div>' +
+              '<div class="bird-card-tags">' +
+                habitatTags +
+                '<span class="tag ' + prot.class + '">' + prot.label + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>';
+      }).join('');
+    }
+
+    function applyFilters() {
+      var search = searchInput.value.trim();
+      var habitat = habitatSelect.value;
+      var protection = protectionSelect.value;
+
+      var hasFilter = search || habitat !== 'all' || protection !== 'all';
+      resetBtn.style.display = hasFilter ? 'inline-flex' : 'none';
+
+      var filtered = customFilterBirds(BIRDS_DATA, {
+        search: search,
+        habitat: habitat,
+        protection: protection
+      });
+      renderBirdCards(filtered);
+    }
+
+    function resetFilters() {
+      searchInput.value = '';
+      habitatSelect.value = 'all';
+      protectionSelect.value = 'all';
+      applyFilters();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    habitatSelect.addEventListener('change', applyFilters);
+    protectionSelect.addEventListener('change', applyFilters);
+    resetBtn.addEventListener('click', resetFilters);
+
+    renderBirdCards(BIRDS_DATA);
+  </script>
+</body>
+</html>

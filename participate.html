@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>参与保护 | AI 赋能飞鸟保护科普网站</title>
+  <link rel="stylesheet" href="_shared/css/style.css">
+  <style>
+    /* 覆盖 initCommon 设置的 body padding，改用内容区 margin-top */
+    body { padding-top: 0 !important; }
+
+    /* ---- 页面 Hero ---- */
+    .page-hero {
+      margin-top: calc(var(--nav-height) + 44px);
+      position: relative;
+      padding: 96px 0 88px;
+      background: linear-gradient(135deg, #1a3a2e 0%, #2F5D50 50%, #3a6b5c 100%);
+      overflow: hidden;
+    }
+    .page-hero .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .page-hero .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(217, 154, 61, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(93, 140, 131, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+      animation: fadeInUp 1s ease-out;
+    }
+    .page-hero-content .section-tag {
+      color: var(--accent-light);
+      margin-bottom: 16px;
+    }
+    .page-hero-content h1 {
+      color: #fff;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    }
+    .page-hero-content .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    /* ---- 观察入门卡片内列表 ---- */
+    .tip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .tip-list .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.92rem;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .tip-list .tip-item .tip-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: rgba(47, 93, 80, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .tip-list .tip-item strong {
+      color: var(--primary);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .tip-list .tip-item .tip-desc {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    /* ---- 公民科学平台卡 ---- */
+    .platform-card {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      border-top: 4px solid var(--secondary);
+    }
+    .platform-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .platform-card .platform-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+    .platform-card h4 {
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .platform-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ---- 水平流程管线 ---- */
+    .pipeline {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 32px 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+    }
+    .pipeline-step {
+      flex: 1 1 0;
+      min-width: 120px;
+      background: var(--bg2);
+      border-radius: var(--radius-sm);
+      padding: 20px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      transition: var(--transition);
+    }
+    .pipeline-step:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+    }
+    .pipeline-step .pipe-emoji {
+      font-size: 1.9rem;
+      display: block;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+    .pipeline-step .pipe-sub {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .pipeline-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1.6rem;
+      padding: 0 6px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ---- 不打扰守则列表 ---- */
+    .rule-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+    .rule-item .rule-no {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* ---- 底部结语 ---- */
+    .closing-section {
+      background: linear-gradient(135deg, #1a3a2e 0%, #2F5D50 100%);
+      color: #fff;
+    }
+    .closing-section .section-header h2 { color: #fff; }
+    .closing-section .section-header p { color: rgba(255,255,255,0.7); }
+    .closing-text {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .closing-text p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.05rem;
+      line-height: 2;
+      margin-bottom: 12px;
+    }
+    .closing-text p:last-child {
+      color: var(--accent-light);
+      font-weight: 600;
+      font-size: 1.15rem;
+    }
+
+    /* ---- 引导区 ---- */
+    .cta-section {
+      background: linear-gradient(135deg, rgba(47, 93, 80, 0.06) 0%, rgba(93, 140, 131, 0.06) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div id="story-nav-placeholder"></div>
+
+  <!-- ============ Hero ============ -->
+  <section class="page-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-birds">
+      <div class="hero-bird" style="top:24%;animation-duration:30s;animation-delay:0s;">
+        <svg width="38" height="18" viewBox="0 0 38 18" fill="none"><path d="M2 9 Q9 2 19 9 Q29 2 36 9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="hero-bird" style="top:46%;animation-duration:38s;animation-delay:5s;">
+        <svg width="28" height="14" viewBox="0 0 28 14" fill="none"><path d="M2 7 Q7 2 14 7 Q21 2 26 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="hero-bird" style="top:16%;animation-duration:34s;animation-delay:11s;">
+        <svg width="42" height="20" viewBox="0 0 42 20" fill="none"><path d="M2 10 Q11 3 21 10 Q31 3 40 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="container">
+      <div class="page-hero-content">
+        <span class="section-tag">故事线 05 · 保护它</span>
+        <h1>参与保护</h1>
+        <p class="hero-subtitle">每一个人都可以成为飞鸟保护的参与者——从一次观察、一条记录、一次不打扰开始。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 我能做什么 ============ -->
+  <section class="section" data-animate>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">01 · 行动起来</span>
+        <h2>我能做什么？</h2>
+        <p>保护飞鸟并不遥远，这四件事，从今天就能开始。</p>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="action-card">
+          <div class="action-icon">🐦</div>
+          <h3>鸟类观察</h3>
+          <p>在公园、湿地观察和记录鸟类</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon">📱</div>
+          <h3>公民科学</h3>
+          <p>用 eBird 等平台提交观鸟记录</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon">🤫</div>
+          <h3>不打扰野生鸟类</h3>
+          <p>保持距离，不追逐、不投喂</p>
+        </div>
+        <div class="action-card">
+          <div class="action-icon">📢</div>
+          <h3>传播科普知识</h3>
+          <p>向身边人介绍飞鸟保护</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 鸟类观察入门 ============ -->
+  <section class="section" style="background:var(--bg3);" data-animate>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">02 · 观察入门</span>
+        <h2>鸟类观察入门</h2>
+        <p>正确的观察方式，让你看到更多，也打扰更少。</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card">
+          <div style="padding:28px;">
+            <h3 style="color:var(--primary);margin-bottom:8px;">🎒 装备建议</h3>
+            <div class="tip-list">
+              <div class="tip-item">
+                <span class="tip-icon">🔭</span>
+                <span>
+                  <strong>望远镜</strong>
+                  <span class="tip-desc">8-10 倍双筒望远镜，适合远距离观察</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">📖</span>
+                <span>
+                  <strong>图鉴</strong>
+                  <span class="tip-desc">随身携带鸟类图鉴或使用手机 App</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">📝</span>
+                <span>
+                  <strong>记录本</strong>
+                  <span class="tip-desc">记录时间、地点、鸟种与行为</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="padding:28px;">
+            <h3 style="color:var(--primary);margin-bottom:8px;">👁️ 观察技巧</h3>
+            <div class="tip-list">
+              <div class="tip-item">
+                <span class="tip-icon">🌅</span>
+                <span>
+                  <strong>清晨最佳</strong>
+                  <span class="tip-desc">日出后两小时鸟类活动最活跃</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🤫</span>
+                <span>
+                  <strong>保持安静</strong>
+                  <span class="tip-desc">轻声慢行，避免突然动作惊扰鸟类</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🌬️</span>
+                <span>
+                  <strong>注意风向</strong>
+                  <span class="tip-desc">逆风观察，声音和气味不易传向鸟群</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="padding:28px;">
+            <h3 style="color:var(--primary);margin-bottom:8px;">✏️ 记录方法</h3>
+            <div class="tip-list">
+              <div class="tip-item">
+                <span class="tip-icon">🕐</span>
+                <span>
+                  <strong>时间与地点</strong>
+                  <span class="tip-desc">精确记录观察日期、时段与位置</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🏷️</span>
+                <span>
+                  <strong>鸟种与数量</strong>
+                  <span class="tip-desc">记录鸟种名称和观察到的大致数量</span>
+                </span>
+              </div>
+              <div class="tip-item">
+                <span class="tip-icon">🚶</span>
+                <span>
+                  <strong>行为</strong>
+                  <span class="tip-desc">记录觅食、鸣叫、飞行等行为特征</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 公民科学 ============ -->
+  <section class="section" id="citizen-science" data-animate>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">03 · 公民科学</span>
+        <h2>公民科学：每个人都是科学家</h2>
+        <p>你的每一次观鸟记录，都在为鸟类保护积累宝贵数据。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:32px;">
+        <div style="padding:32px;">
+          <p style="font-size:1.02rem;line-height:1.9;">
+            <strong style="color:var(--primary);">公民科学（Citizen Science）</strong>是指公众参与科学研究的数据收集与分析活动。在鸟类保护领域，观鸟爱好者提交的记录汇聚成庞大的数据库，帮助科学家追踪鸟类分布、种群趋势和迁徙规律。你不必是专业研究者，每一次观察记录都是对科学的贡献。
+          </p>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom:24px;">
+        <h3 style="font-size:1.3rem;">推荐平台</h3>
+      </div>
+      <div class="grid grid-2" style="margin-bottom:36px;">
+        <div class="platform-card">
+          <div class="platform-icon">🌍</div>
+          <h4>eBird</h4>
+          <p>由康奈尔鸟类实验室运营的全球观鸟记录平台，汇集数亿条观察记录，是鸟类分布研究的核心数据库之一。</p>
+        </div>
+        <div class="platform-card">
+          <div class="platform-icon">🇨🇳</div>
+          <h4>中国观鸟记录中心</h4>
+          <p>国内主要的观鸟记录平台，汇集中国境内观鸟数据，为国内鸟类研究与保护提供数据支撑。</p>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom:20px;">
+        <h3 style="font-size:1.3rem;">如何参与</h3>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="pipe-emoji">👤</span>
+          注册账号
+          <span class="pipe-sub">选择平台</span>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+          <span class="pipe-emoji">🐦</span>
+          观鸟记录
+          <span class="pipe-sub">实地观察</span>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+          <span class="pipe-emoji">📤</span>
+          提交数据
+          <span class="pipe-sub">上传记录</span>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+          <span class="pipe-emoji">🔬</span>
+          贡献科学
+          <span class="pipe-sub">数据共享</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 不打扰野生鸟类 ============ -->
+  <section class="section" style="background:var(--bg3);" data-animate>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">04 · 生态伦理</span>
+        <h2>不打扰野生鸟类</h2>
+        <p>最好的爱，是保持距离。遵守这些守则，让鸟类安心生活。</p>
+      </div>
+
+      <div class="callout" style="background:rgba(199,84,80,0.06);border-left-color:var(--danger);">
+        <p style="margin-bottom:16px;"><strong style="color:var(--danger);">观鸟守则：</strong>以下行为会对野生鸟类造成严重干扰，请务必避免。</p>
+        <div class="rule-list">
+          <div class="rule-item">
+            <span class="rule-no">1</span>
+            <span>不追逐、不惊吓</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-no">2</span>
+            <span>不投喂</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-no">3</span>
+            <span>不靠近巢穴</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-no">4</span>
+            <span>不播放鸟鸣录音引诱</span>
+          </div>
+          <div class="rule-item">
+            <span class="rule-no">5</span>
+            <span>保持安全距离</span>
+          </div>
+        </div>
+        <p style="margin-top:16px;font-size:0.88rem;color:var(--muted);">投喂会改变鸟类觅食本能，靠近巢穴可能导致亲鸟弃巢，播放录音引诱会干扰鸟类正常鸣唱与求偶行为。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 底部结语 ============ -->
+  <section class="section closing-section" data-animate>
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" style="color:var(--accent-light);">结语</span>
+        <h2>科技守护自然，从认识开始</h2>
+      </div>
+      <div class="closing-text">
+        <p>认识飞鸟，是保护的开始；</p>
+        <p>了解栖息地，是保护的基础；</p>
+        <p>AI 让我们能够更高效地发现、记录和理解自然；</p>
+        <p>科技最终服务的，是人与自然更好的共存。</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="_shared/js/birds-data.js"></script>
+  <script src="_shared/js/nav.js"></script>
+  <script>
+    initCommon('participate', 4);
+  </script>
+</body>
+</html>

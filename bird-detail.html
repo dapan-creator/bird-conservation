@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鸟类详情 - AI × 飞鸟保护</title>
+  <link rel="stylesheet" href="_shared/css/style.css">
+  <style>
+    body { padding-top: calc(var(--nav-height) + 44px) !important; }
+
+    .detail-hero { margin-top: 0 !important; min-height: 380px; }
+    .detail-hero-bg svg { width: 100%; height: 100%; }
+    .detail-hero-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .detail-hero-content .container { padding: 0 24px; }
+    .detail-hero-content .hero-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      transition: var(--transition);
+    }
+    .detail-hero-content .hero-back:hover { color: #fff; }
+    .detail-hero-content .hero-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .detail-hero-content .hero-badge.level-1 { background: rgba(199,84,80,0.5); }
+    .detail-hero-content .hero-badge.level-2 { background: rgba(217,154,61,0.5); }
+    .detail-hero-content .hero-badge.level-3 { background: rgba(91,156,95,0.5); }
+
+    .detail-intro {
+      padding: 32px 0 8px;
+    }
+    .detail-intro p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: var(--ink);
+    }
+
+    .detail-section { padding: 40px 0; }
+    .detail-section-header h2 { font-size: 1.4rem; }
+
+    .info-item .info-value.text { font-weight: 400; line-height: 1.7; font-size: 0.98rem; }
+
+    .threat-item {
+      border-left: 4px solid var(--danger);
+      background: rgba(199,84,80,0.04);
+    }
+    .threat-item .info-label { color: var(--danger); }
+    .threat-item .info-value { color: var(--ink); font-weight: 500; }
+
+    .protection-item {
+      border-left: 4px solid var(--success);
+      background: rgba(91,156,95,0.04);
+    }
+    .protection-item .info-label { color: var(--success); }
+
+    .ai-tech-item .ai-tech-icon { font-size: 1.4rem; }
+
+    .detail-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 32px 0;
+      margin-top: 16px;
+    }
+    .detail-nav-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: var(--bg2);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .detail-nav-btn:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .detail-nav-btn .nav-arrow {
+      font-size: 1.3rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .detail-nav-btn .nav-text { text-align: left; }
+    .detail-nav-btn.next { justify-content: flex-end; text-align: right; }
+    .detail-nav-btn.next .nav-text { text-align: right; }
+    .detail-nav-btn .nav-label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .detail-nav-btn .nav-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .bird-not-found {
+      text-align: center;
+      padding: 120px 24px;
+    }
+    .bird-not-found .icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .bird-not-found h2 { color: var(--primary); margin-bottom: 12px; }
+    .bird-not-found p { color: var(--muted); margin-bottom: 24px; }
+
+    .intro-bridge .btn { margin-top: 20px; }
+
+    @media (max-width: 600px) {
+      .detail-nav { flex-direction: column; }
+      .detail-nav-btn.next { justify-content: flex-start; text-align: left; }
+      .detail-nav-btn.next .nav-text { text-align: left; }
+      .detail-nav-btn.next .nav-arrow { order: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div id="story-nav-placeholder"></div>
+
+  <div id="detail-root"></div>
+
+  <div id="footer-placeholder"></div>
+  <script src="_shared/js/birds-data.js"></script>
+  <script src="_shared/js/nav.js"></script>
+  <script>
+    initCommon('bird-detail', 0);
+
+    /* AI 应用 emoji 映射 */
+    var AI_EMOJI = {
+      '图像识别': '\u{1F4F7}',
+      '声音识别': '\u{1F3B5}',
+      '智能监测': '\u{1F4E1}',
+      '种群分析': '\u{1F4CA}',
+      '无人机监测': '\u{1F681}'
+    };
+    var AI_DEFAULT_EMOJI = '\u{1F52C}';
+
+    function aiEmoji(name) {
+      return AI_EMOJI[name] || AI_DEFAULT_EMOJI;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function infoItem(label, value, extraClass) {
+      var cls = extraClass ? 'info-item ' + extraClass : 'info-item';
+      return '' +
+        '<div class="' + cls + '">' +
+          '<div class="info-label">' + label + '</div>' +
+          '<div class="info-value text">' + value + '</div>' +
+        '</div>';
+    }
+
+    function renderNotFound() {
+      var root = document.getElementById('detail-root');
+      root.innerHTML = '' +
+        '<div class="container">' +
+          '<div class="bird-not-found">' +
+            '<div class="icon">\u{1F426}</div>' +
+            '<h2>未找到该鸟类</h2>' +
+            '<p>可能链接有误，该鸟类尚未收录在图鉴中。</p>' +
+            '<a href="birds.html" class="btn btn-primary">返回飞鸟图鉴</a>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function renderBirdDetail(bird, index) {
+      var prot = PROTECTION_LEVELS[bird.protectionLevel];
+      var root = document.getElementById('detail-root');
+
+      /* 上一只 / 下一只（循环） */
+      var total = BIRDS_DATA.length;
+      var prevBird = BIRDS_DATA[(index - 1 + total) % total];
+      var nextBird = BIRDS_DATA[(index + 1) % total];
+
+      /* 威胁列表 */
+      var threatsHtml = bird.threats.map(function (t, i) {
+        return infoItem('威胁 ' + (i + 1), escapeHtml(t), 'threat-item');
+      }).join('');
+
+      /* 保护措施 + 保护地 + 监测方式 */
+      var protectionItems = bird.protection.map(function (p, i) {
+        return infoItem('保护措施 ' + (i + 1), escapeHtml(p), 'protection-item');
+      }).join('');
+      protectionItems += infoItem('主要保护地', escapeHtml(bird.protectedAreas), 'protection-item');
+      protectionItems += infoItem('监测方式', escapeHtml(bird.monitoring), 'protection-item');
+
+      /* AI 应用 */
+      var aiItems = bird.aiApplications.map(function (app) {
+        return '' +
+          '<div class="ai-tech-item">' +
+            '<div class="ai-tech-icon">' + aiEmoji(app) + '</div>' +
+            '<div class="ai-tech-name">' + escapeHtml(app) + '</div>' +
+          '</div>';
+      }).join('');
+
+      root.innerHTML = '' +
+
+        /* ---- Hero ---- */
+        '<div class="detail-hero">' +
+          '<div class="detail-hero-bg">' + getBirdImage(bird) + '</div>' +
+          '<div class="detail-hero-overlay"></div>' +
+          '<div class="detail-hero-content">' +
+            '<div class="container">' +
+              '<a href="birds.html" class="hero-back">\u2190 返回飞鸟图鉴</a>' +
+              '<span class="hero-badge level-' + bird.protectionLevel + '">' + prot.label + '</span>' +
+              '<h1>' + escapeHtml(getBirdNameWithPinyin(bird)) + '</h1>' +
+              '<div class="detail-names">' +
+                '<span>' + escapeHtml(bird.englishName) + '</span>' +
+                '<span>\u00B7</span>' +
+                '<span style="font-style:italic;">' + escapeHtml(bird.scientificName) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="container">' +
+
+          /* 简介 */
+          '<div class="detail-intro">' +
+            '<p>' + escapeHtml(bird.description) + '</p>' +
+          '</div>' +
+
+          /* ① 它们是谁？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">1</span>' +
+              '<h2>它们是谁？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' +
+              infoItem('分类（目）', escapeHtml(bird.classification.order)) +
+              infoItem('分类（科）', escapeHtml(bird.classification.family)) +
+              infoItem('体型', escapeHtml(bird.bodySize)) +
+              infoItem('体重', escapeHtml(bird.weight)) +
+              infoItem('寿命', escapeHtml(bird.lifespan)) +
+            '</div>' +
+          '</div>' +
+
+          /* ② 它们住在哪里？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">2</span>' +
+              '<h2>它们住在哪里？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' +
+              infoItem('栖息环境', escapeHtml(bird.habitatEnv)) +
+              infoItem('分布区域', escapeHtml(bird.distribution)) +
+              infoItem('迁徙情况', escapeHtml(bird.migration)) +
+            '</div>' +
+          '</div>' +
+
+          /* ③ 它们吃什么？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">3</span>' +
+              '<h2>它们吃什么？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' +
+              infoItem('食物', escapeHtml(bird.diet)) +
+              infoItem('觅食方式', escapeHtml(bird.feedingMethod)) +
+            '</div>' +
+          '</div>' +
+
+          /* ④ 它们有什么特点？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">4</span>' +
+              '<h2>它们有什么特点？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' +
+              infoItem('外貌特征', escapeHtml(bird.appearance)) +
+              infoItem('叫声', escapeHtml(bird.call)) +
+              infoItem('行为习性', escapeHtml(bird.behavior)) +
+            '</div>' +
+          '</div>' +
+
+          /* ⑤ 它们面临什么威胁？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">5</span>' +
+              '<h2>它们面临什么威胁？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' + threatsHtml + '</div>' +
+          '</div>' +
+
+          /* ⑥ 人类如何保护它们？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">6</span>' +
+              '<h2>人类如何保护它们？</h2>' +
+            '</div>' +
+            '<div class="info-grid">' + protectionItems + '</div>' +
+          '</div>' +
+
+          /* ⑦ AI 能帮它们什么？ */
+          '<div class="detail-section">' +
+            '<div class="detail-section-header">' +
+              '<span class="detail-section-num">7</span>' +
+              '<h2>AI 能帮它们什么？</h2>' +
+            '</div>' +
+            '<div class="ai-help-box">' +
+              '<h3>\u{1F9E0} AI 技术如何守护 ' + escapeHtml(bird.name) + '</h3>' +
+              '<div class="ai-tech-grid">' + aiItems + '</div>' +
+            '</div>' +
+          '</div>' +
+
+          /* 上一只 / 下一只 */
+          '<div class="detail-nav">' +
+            '<a href="bird-detail.html?id=' + prevBird.id + '" class="detail-nav-btn prev">' +
+              '<span class="nav-arrow">\u2190</span>' +
+              '<span class="nav-text">' +
+                '<span class="nav-label">上一只</span>' +
+                '<span class="nav-name">' + escapeHtml(prevBird.name) + '</span>' +
+              '</span>' +
+            '</a>' +
+            '<a href="bird-detail.html?id=' + nextBird.id + '" class="detail-nav-btn next">' +
+              '<span class="nav-text">' +
+                '<span class="nav-label">下一只</span>' +
+                '<span class="nav-name">' + escapeHtml(nextBird.name) + '</span>' +
+              '</span>' +
+              '<span class="nav-arrow">\u2192</span>' +
+            '</a>' +
+          '</div>' +
+
+        '</div>';
+
+      /* 更新页面标题 */
+      document.title = bird.name + ' - 飞鸟图鉴 - AI × 飞鸟保护';
+
+      /* 滚动到顶部 */
+      window.scrollTo(0, 0);
+    }
+
+    /* 从 URL 获取鸟类 ID 并渲染 */
+    function init() {
+      var id = getUrlParam('id');
+      if (!id) {
+        renderNotFound();
+        return;
+      }
+      var index = BIRDS_DATA.findIndex(function (b) { return b.id === id; });
+      if (index === -1) {
+        renderNotFound();
+        return;
+      }
+      renderBirdDetail(BIRDS_DATA[index], index);
+    }
+
+    init();
+  </script>
+</body>
+</html>

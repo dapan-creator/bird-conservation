@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 实验室 | 模拟 AI 识别飞鸟</title>
+  <link rel="stylesheet" href="_shared/css/style.css">
+  <style>
+    body { padding-top: 0 !important; }
+    .lab-hero {
+      background: linear-gradient(135deg, #1a3a2e 0%, #2F5D50 60%, #3a6b5c 100%);
+      padding: 120px 0 60px;
+      margin-top: calc(var(--nav-height) + 44px);
+      text-align: center;
+      color: #fff;
+    }
+    .lab-hero h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin-bottom: 12px; }
+    .lab-hero p { color: rgba(255,255,255,0.8); max-width: 560px; margin: 0 auto; }
+
+    /* 实验室选项卡 */
+    .lab-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .lab-tab {
+      padding: 10px 24px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg2);
+      color: var(--muted);
+      border: 2px solid transparent;
+    }
+    .lab-tab:hover { color: var(--primary); }
+    .lab-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .lab-panel { display: none; }
+    .lab-panel.active { display: block; animation: fadeInUp 0.5s ease-out; }
+
+    /* 图片选择器 */
+    .bird-selector {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .bird-selector-item {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: var(--transition);
+      position: relative;
+    }
+    .bird-selector-item:hover { transform: scale(1.05); }
+    .bird-selector-item.selected { border-color: var(--accent); }
+    .bird-selector-item svg { width: 100%; height: 100%; }
+    .bird-selector-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* 识别结果 */
+    .recognition-result {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 32px;
+    }
+    .result-image {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4/3;
+    }
+    .result-image svg { width: 100%; height: 100%; }
+    .result-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .detection-box {
+      position: absolute;
+      border: 3px solid var(--accent);
+      border-radius: 4px;
+      animation: fadeInUp 0.5s ease-out 0.8s both;
+    }
+    .detection-label {
+      position: absolute;
+      top: -28px;
+      left: -3px;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 4px 4px 0 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .result-details h3 { color: var(--primary); margin-bottom: 16px; }
+    .result-name { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
+    .result-sci { font-size: 0.9rem; color: var(--muted); font-style: italic; margin-bottom: 16px; }
+    .result-confidence { margin-bottom: 20px; }
+    .result-confidence-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+
+    .result-observations {
+      background: var(--bg3);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-top: 16px;
+    }
+    .result-observations h4 { font-size: 0.95rem; margin-bottom: 12px; color: var(--primary); }
+
+    /* 声纹识别 */
+    .sound-player {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .sound-bird-options {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .sound-bird-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      background: var(--bg3);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+    .sound-bird-btn:hover { background: rgba(93,140,131,0.15); }
+    .sound-bird-btn.active { border-color: var(--secondary); background: rgba(93,140,131,0.12); }
+
+    .play-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      transition: var(--transition);
+    }
+    .play-btn:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
+    .play-btn.playing { background: var(--accent); }
+
+    /* 声谱图 */
+    .spectrogram {
+      background: var(--bg3);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin: 20px 0;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spectrogram svg { width: 100%; max-width: 500px; }
+
+    /* 声纹结果 */
+    .sound-results { margin-top: 24px; }
+    .sound-result-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--bg2);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .sound-result-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .sound-result-rank.rank-1 { background: var(--primary); color: #fff; }
+    .sound-result-rank.rank-2 { background: var(--secondary); color: #fff; }
+    .sound-result-rank.rank-3 { background: var(--bg3); color: var(--muted); }
+    .sound-result-name { flex: 1; font-weight: 600; }
+    .sound-result-bar { width: 120px; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+    .sound-result-fill { height: 100%; border-radius: 4px; transition: width 1s ease-out; }
+    .sound-result-pct { font-weight: 700; color: var(--primary); min-width: 50px; text-align: right; }
+
+    /* 过程可视化 */
+    .process-pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .process-step {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+    }
+    .process-step-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+      flex-shrink: 0;
+    }
+    .process-step-body {
+      flex: 1;
+      background: var(--bg2);
+      padding: 20px 24px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .process-step-body h4 { color: var(--primary); margin-bottom: 8px; }
+    .process-visual-box {
+      background: var(--bg3);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-top: 12px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .process-arrow { text-align: center; color: var(--accent); font-size: 1.5rem; margin-left: 24px; }
+
+    /* 工作流动画 */
+    .workflow-container {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    .workflow-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 800px;
+    }
+    .workflow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 100px;
+    }
+    .workflow-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: var(--bg3);
+      transition: var(--transition);
+    }
+    .workflow-node.active .workflow-icon {
+      background: var(--primary);
+      color: #fff;
+      transform: scale(1.15);
+      box-shadow: var(--shadow-md);
+    }
+    .workflow-node.done .workflow-icon {
+      background: var(--success);
+      color: #fff;
+    }
+    .workflow-label { font-size: 0.8rem; color: var(--muted); text-align: center; white-space: nowrap; }
+    .workflow-node.active .workflow-label { color: var(--primary); font-weight: 600; }
+    .workflow-connector {
+      width: 40px;
+      height: 2px;
+      background: var(--rule);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .workflow-connector.active { background: var(--primary); }
+
+    .workflow-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .recognition-result { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div id="story-nav-placeholder"></div>
+
+  <!-- Hero -->
+  <section class="lab-hero">
+    <div class="container">
+      <span class="section-tag" style="color: var(--accent-light);">故事线 03 · 看见它</span>
+      <h1>模拟 AI 识别飞鸟</h1>
+      <p>上传图片识鸟、听声音识鸟、观看 AI 识别过程——在这里，你可以亲身感受 AI 如何看见飞鸟。</p>
+    </div>
+  </section>
+
+  <!-- 实验室主体 -->
+  <section class="section">
+    <div class="container">
+      <!-- 选项卡 -->
+      <div class="lab-tabs">
+        <div class="lab-tab active" data-tab="image">📷 上传图片识鸟</div>
+        <div class="lab-tab" data-tab="sound">🎙️ 听声音识鸟</div>
+        <div class="lab-tab" data-tab="process">🔬 AI 识别过程</div>
+        <div class="lab-tab" data-tab="workflow">⚙️ AI 保护工作流</div>
+      </div>
+
+      <!-- 面板1：图片识别 -->
+      <div class="lab-panel active" id="panel-image">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <h3>AI 鸟类图像识别</h3>
+        </div>
+
+        <!-- 鸟类选择器 -->
+        <p style="text-align: center; color: var(--muted); margin-bottom: 12px;">点击选择一种鸟类图片，开始模拟 AI 识别</p>
+        <div class="bird-selector" id="birdSelector"></div>
+
+        <!-- 识别中 -->
+        <div id="recognizing" style="display: none; max-width: 600px; margin: 24px auto 0; text-align: center;">
+          <p style="color: var(--primary); font-weight: 600; margin-bottom: 16px;">🔍 AI 正在分析图片...</p>
+          <div class="ai-progress">
+            <div class="ai-progress-fill" id="imageProgress" style="width: 0%;">0%</div>
+          </div>
+          <p id="imageStatus" style="color: var(--muted); font-size: 0.85rem; margin-top: 8px;">正在加载 AI 模型...</p>
+        </div>
+
+        <!-- 识别结果 -->
+        <div id="imageResult" style="display: none; max-width: 800px; margin: 0 auto;">
+          <div class="recognition-result">
+            <div class="result-image" id="resultImage"></div>
+            <div class="result-details">
+              <h3>🎯 AI 识别结果</h3>
+              <div class="result-name" id="resultName"></div>
+              <div class="result-sci" id="resultSci"></div>
+              <div class="result-confidence">
+                <div class="result-confidence-label">置信度</div>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" id="resultConfidence" style="width: 0%;"></div>
+                </div>
+              </div>
+              <div class="result-observations">
+                <h4>AI 观察到的特征</h4>
+                <div class="feature-extract" id="resultFeatures"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 24px;">
+            <button class="btn btn-secondary" onclick="resetImageRecognition()">重新识别</button>
+            <a href="bird-detail.html" id="resultDetailLink" class="btn btn-primary">查看详情 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 面板2：声音识别 -->
+      <div class="lab-panel" id="panel-sound">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <h3>AI 鸟类声音识别</h3>
+          <p>点击播放鸟鸣，让 AI 听声音识别鸟种</p>
+        </div>
+
+        <div class="sound-player">
+          <p style="color: var(--muted); margin-bottom: 16px;">选择一种鸟鸣（模拟播放）</p>
+          <div class="sound-bird-options" id="soundBirdOptions"></div>
+
+          <button class="play-btn" id="playBtn">▶</button>
+          <p id="playStatus" style="color: var(--muted); font-size: 0.9rem;">点击播放鸟鸣</p>
+
+          <!-- 声谱图 -->
+          <div class="spectrogram" id="spectrogram">
+            <p style="color: var(--muted); font-size: 0.85rem;">播放后将显示声音波形</p>
+          </div>
+
+          <!-- AI 分析中 -->
+          <div id="soundAnalyzing" style="display: none;">
+            <p style="color: var(--primary); font-weight: 600;">🎙️ AI 正在分析声音...</p>
+            <div class="ai-progress" style="max-width: 400px; margin: 12px auto;">
+              <div class="ai-progress-fill" id="soundProgress" style="width: 0%;">0%</div>
+            </div>
+          </div>
+
+          <!-- 识别结果 -->
+          <div class="sound-results" id="soundResults" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- 面板3：AI 识别过程 -->
+      <div class="lab-panel" id="panel-process">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <h3>AI 识别过程可视化</h3>
+          <p>AI 到底是怎么「认鸟」的？让我们一步步来看</p>
+        </div>
+
+        <div style="max-width: 700px; margin: 0 auto;">
+          <div class="process-pipeline">
+            <!-- 步骤1 -->
+            <div class="process-step">
+              <div class="process-step-num">1</div>
+              <div class="process-step-body">
+                <h4>原始图片输入</h4>
+                <p style="font-size: 0.9rem; color: var(--muted);">AI 接收到一张鸟类照片</p>
+                <div class="process-visual-box" id="processStep1">
+                  <svg width="80" height="60" viewBox="0 0 80 60"><rect width="80" height="60" rx="4" fill="#D9D5C7"/><text x="40" y="35" text-anchor="middle" font-size="20">🐦</text></svg>
+                </div>
+              </div>
+            </div>
+            <div class="process-arrow">↓</div>
+
+            <!-- 步骤2 -->
+            <div class="process-step">
+              <div class="process-step-num">2</div>
+              <div class="process-step-body">
+                <h4>目标检测 - 找到鸟的位置</h4>
+                <p style="font-size: 0.9rem; color: var(--muted);">AI 在图片中定位鸟的位置，画出检测框</p>
+                <div class="process-visual-box" id="processStep2">
+                  <svg width="120" height="80" viewBox="0 0 120 80">
+                    <rect width="120" height="80" rx="4" fill="#D9D5C7"/>
+                    <rect x="30" y="15" width="55" height="50" fill="none" stroke="#D99A3D" stroke-width="2" rx="2"/>
+                    <text x="35" y="12" font-size="7" fill="#D99A3D" font-weight="600">bird 96%</text>
+                    <text x="55" y="45" text-anchor="middle" font-size="16">🐦</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="process-arrow">↓</div>
+
+            <!-- 步骤3 -->
+            <div class="process-step">
+              <div class="process-step-num">3</div>
+              <div class="process-step-body">
+                <h4>特征提取 - 分析关键特征</h4>
+                <p style="font-size: 0.9rem; color: var(--muted);">AI 提取颜色、形状、轮廓、纹理、姿态等特征</p>
+                <div class="process-visual-box" id="processStep3">
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                    <span style="background: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">🎨 颜色</span>
+                    <span style="background: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">📐 形状</span>
+                    <span style="background: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">✏️ 轮廓</span>
+                    <span style="background: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">🌀 纹理</span>
+                    <span style="background: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">🧍 姿态</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="process-arrow">↓</div>
+
+            <!-- 步骤4 -->
+            <div class="process-step">
+              <div class="process-step-num">4</div>
+              <div class="process-step-body">
+                <h4>模型判断 - 物种分类</h4>
+                <p style="font-size: 0.9rem; color: var(--muted);">AI 将特征输入分类模型，给出可能的物种及置信度</p>
+                <div class="process-visual-box" id="processStep4">
+                  <div id="processResult" style="text-align: center;">
+                    <p style="font-size: 0.85rem; color: var(--muted);">点击下方按钮开始演示</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 24px;">
+            <button class="btn btn-primary" id="runProcessBtn">▶ 开始演示</button>
+          </div>
+        </div>
+
+        <div class="callout" style="max-width: 700px; margin: 32px auto 0;">
+          <p><strong>科普提示：</strong>AI 并非百分之百正确。在现实中，AI 识别结果需要人工判断和验证。这正是「AI 辅助」而非「AI 替代」的含义。</p>
+        </div>
+      </div>
+
+      <!-- 面板4：AI 保护工作流 -->
+      <div class="lab-panel" id="panel-workflow">
+        <div class="section-header" style="margin-bottom: 24px;">
+          <h3>AI 保护工作流</h3>
+          <p>从野外监测到保护决策——AI 参与飞鸟保护的完整流程</p>
+        </div>
+
+        <div class="workflow-container">
+          <div class="workflow-flow" id="workflowFlow">
+            <div class="workflow-node" data-step="0">
+              <div class="workflow-icon">🌿</div>
+              <div class="workflow-label">野外</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="1">
+              <div class="workflow-icon">📷</div>
+              <div class="workflow-label">智能相机</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="2">
+              <div class="workflow-icon">📸</div>
+              <div class="workflow-label">拍摄照片</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="3">
+              <div class="workflow-icon">🤖</div>
+              <div class="workflow-label">AI 识别</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="4">
+              <div class="workflow-icon">🐦</div>
+              <div class="workflow-label">发现鸟类</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="5">
+              <div class="workflow-icon">📝</div>
+              <div class="workflow-label">记录数据</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="6">
+              <div class="workflow-icon">🗄️</div>
+              <div class="workflow-label">形成数据库</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="7">
+              <div class="workflow-icon">📊</div>
+              <div class="workflow-label">分析种群变化</div>
+            </div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-node" data-step="8">
+              <div class="workflow-icon">🛡️</div>
+              <div class="workflow-label">保护措施</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workflow-controls">
+          <button class="btn btn-primary" id="workflowPlayBtn">▶ 播放工作流</button>
+          <button class="btn btn-secondary" id="workflowResetBtn">↻ 重置</button>
+        </div>
+
+        <div id="workflowStatus" style="text-align: center; margin-top: 24px; min-height: 28px;">
+          <p style="color: var(--muted); font-size: 0.9rem;">点击播放，观看 AI 保护工作流的完整过程</p>
+        </div>
+
+        <div class="callout" style="max-width: 700px; margin: 32px auto 0;">
+          <p><strong>核心理念：</strong>AI 不只是「认鸟」，更重要的是帮助人类理解鸟类种群变化，从而制定科学的保护措施。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部引导 -->
+  <section class="section" style="background: var(--bg3);">
+    <div class="container" style="text-align: center;">
+      <h2 style="margin-bottom: 16px;">想了解更多 AI 保护飞鸟的真实案例？</h2>
+      <p style="color: var(--muted); margin-bottom: 24px;">从图像识别到声音监测，从无人机到数据分析，AI 正在每一个环节帮助保护飞鸟。</p>
+      <a href="ai-protection.html" class="btn btn-primary btn-lg">查看 AI 保护案例 →</a>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <script src="_shared/js/birds-data.js"></script>
+  <script src="_shared/js/nav.js"></script>
+  <script>
+    initCommon('ai-lab', 2);
+
+    // ===== 选项卡切换 =====
+    document.querySelectorAll('.lab-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.lab-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.lab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ===== 图片识别 =====
+    let selectedBird = null;
+    const birdSelector = document.getElementById('birdSelector');
+
+    // 生成鸟类选择器（选6种代表性鸟类）
+    const selectorBirds = BIRDS_DATA.filter(b => ['baitoubei', 'dandinghe', 'zhuhuan', 'heilianpilu', 'jindiao', 'baihe'].includes(b.id));
+    selectorBirds.forEach(bird => {
+      const item = document.createElement('div');
+      item.className = 'bird-selector-item';
+      item.innerHTML = getBirdImage(bird);
+      item.title = bird.name;
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.bird-selector-item').forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        selectedBird = bird;
+        startImageRecognition();
+      });
+      birdSelector.appendChild(item);
+    });
+
+    function startImageRecognition() {
+      const bird = selectedBird || selectorBirds[0];
+      document.getElementById('imageResult').style.display = 'none';
+      document.getElementById('recognizing').style.display = 'block';
+
+      const statuses = [
+        '正在加载 AI 模型...',
+        '正在检测图片中的目标...',
+        '正在提取特征...',
+        '正在与数据库比对...',
+        '正在计算置信度...'
+      ];
+
+      let progress = 0;
+      let statusIdx = 0;
+      const progressBar = document.getElementById('imageProgress');
+      const statusText = document.getElementById('imageStatus');
+
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = Math.floor(progress) + '%';
+
+        const newStatusIdx = Math.min(Math.floor(progress / 20), statuses.length - 1);
+        if (newStatusIdx !== statusIdx) {
+          statusIdx = newStatusIdx;
+          statusText.textContent = statuses[statusIdx];
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => showImageResult(bird), 500);
+        }
+      }, 200);
+    }
+
+    function showImageResult(bird) {
+      document.getElementById('recognizing').style.display = 'none';
+      document.getElementById('imageResult').style.display = 'block';
+
+      // 图片 + 检测框
+      const resultImage = document.getElementById('resultImage');
+      resultImage.innerHTML = getBirdImage(bird) +
+        '<div class="detection-box" style="top: 15%; left: 20%; width: 55%; height: 60%;">' +
+        '<div class="detection-label">bird ' + (88 + Math.floor(Math.random() * 10)) + '%</div></div>';
+
+      // 鸟名和学名
+      document.getElementById('resultName').textContent = bird.name;
+      document.getElementById('resultSci').textContent = bird.englishName + ' · ' + bird.scientificName;
+
+      // 置信度
+      const confidence = 88 + Math.random() * 10;
+      setTimeout(() => {
+        document.getElementById('resultConfidence').style.width = confidence.toFixed(1) + '%';
+      }, 100);
+
+      // 特征
+      const features = bird.appearance.split('，').slice(0, 4).map(f => f.trim());
+      const featuresHtml = features.map(f => '<div class="feature-extract-item">' + f + '</div>').join('');
+      document.getElementById('resultFeatures').innerHTML = featuresHtml;
+
+      // 详情链接
+      document.getElementById('resultDetailLink').href = 'bird-detail.html?id=' + bird.id;
+    }
+
+    function resetImageRecognition() {
+      document.getElementById('imageResult').style.display = 'none';
+      document.getElementById('recognizing').style.display = 'none';
+      document.querySelectorAll('.bird-selector-item').forEach(i => i.classList.remove('selected'));
+      selectedBird = null;
+    }
+
+    // ===== 声音识别 =====
+    let selectedSoundBird = null;
+    let isPlaying = false;
+
+    const soundBirdOptions = document.getElementById('soundBirdOptions');
+    const soundBirds = BIRDS_DATA.filter(b => ['baitoubei', 'dandinghe', 'zhujingbanjiu', 'xiaopiti', 'dongfangbaiguan'].includes(b.id));
+    soundBirds.forEach(bird => {
+      const btn = document.createElement('div');
+      btn.className = 'sound-bird-btn';
+      btn.textContent = bird.name;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sound-bird-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedSoundBird = bird;
+        // 重置整个识别状态，确保可重新播放
+        isPlaying = false;
+        const playBtn = document.getElementById('playBtn');
+        playBtn.textContent = '▶';
+        playBtn.classList.remove('playing');
+        document.getElementById('soundResults').style.display = 'none';
+        document.getElementById('soundAnalyzing').style.display = 'none';
+        document.getElementById('spectrogram').innerHTML = '<p style="color: var(--muted); font-size: 0.85rem;">点击播放鸟鸣</p>';
+        document.getElementById('playStatus').textContent = '已选择：' + bird.name + ' 的叫声';
+      });
+      soundBirdOptions.appendChild(btn);
+    });
+
+    document.getElementById('playBtn').addEventListener('click', function() {
+      if (!selectedSoundBird) {
+        selectedSoundBird = soundBirds[0];
+        document.querySelectorAll('.sound-bird-btn')[0].classList.add('active');
+      }
+
+      if (isPlaying) {
+        isPlaying = false;
+        this.textContent = '▶';
+        this.classList.remove('playing');
+        document.getElementById('playStatus').textContent = '已暂停';
+        return;
+      }
+
+      isPlaying = true;
+      this.textContent = '⏸';
+      this.classList.add('playing');
+      document.getElementById('playStatus').textContent = '正在播放：' + selectedSoundBird.name + ' 的叫声';
+
+      // 生成声谱图
+      generateSpectrogram();
+
+      // 3秒后开始分析
+      setTimeout(() => {
+        if (!isPlaying) return;
+        startSoundAnalysis();
+      }, 2000);
+    });
+
+    function generateSpectrogram() {
+      const spec = document.getElementById('spectrogram');
+      let bars = '';
+      for (let i = 0; i < 50; i++) {
+        const h = 10 + Math.random() * 60;
+        const y = 40 - h / 2;
+        const opacity = 0.3 + Math.random() * 0.7;
+        bars += '<rect x="' + (i * 10) + '" y="' + y + '" width="6" height="' + h + '" rx="2" fill="#5D8C83" opacity="' + opacity + '">';
+        bars += '<animate attributeName="height" values="' + h + ';' + (h * 0.5) + ';' + h + '" dur="0.5s" repeatCount="indefinite"/>';
+        bars += '<animate attributeName="y" values="' + y + ';' + (y + h * 0.25) + ';' + y + '" dur="0.5s" repeatCount="indefinite"/>';
+        bars += '</rect>';
+      }
+      spec.innerHTML = '<svg viewBox="0 0 500 80" xmlns="http://www.w3.org/2000/svg">' + bars + '</svg>';
+    }
+
+    function startSoundAnalysis() {
+      document.getElementById('soundAnalyzing').style.display = 'block';
+      document.getElementById('soundResults').style.display = 'none';
+
+      let progress = 0;
+      const progressBar = document.getElementById('soundProgress');
+      const interval = setInterval(() => {
+        progress += Math.random() * 12 + 4;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = Math.floor(progress) + '%';
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => showSoundResults(), 400);
+        }
+      }, 150);
+    }
+
+    function showSoundResults() {
+      document.getElementById('soundAnalyzing').style.display = 'none';
+      const results = document.getElementById('soundResults');
+      results.style.display = 'block';
+
+      const bird = selectedSoundBird;
+      const otherBirds = soundBirds.filter(b => b.id !== bird.id).slice(0, 2);
+
+      const allResults = [
+        { name: bird.name, pct: 75 + Math.random() * 15 },
+        { name: otherBirds[0].name, pct: 8 + Math.random() * 10 },
+        { name: otherBirds[1] ? otherBirds[1].name : '其他', pct: 3 + Math.random() * 5 }
+      ];
+
+      let html = '<p style="color: var(--primary); font-weight: 600; margin-bottom: 16px;">🎯 AI 分析完成，可能是：</p>';
+      allResults.forEach((r, i) => {
+        const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : 'rank-3';
+        const fillColor = i === 0 ? 'var(--primary)' : 'var(--secondary)';
+        html += '<div class="sound-result-item">';
+        html += '<div class="sound-result-rank ' + rankClass + '">' + (i + 1) + '</div>';
+        html += '<div class="sound-result-name">' + r.name + '</div>';
+        html += '<div class="sound-result-bar"><div class="sound-result-fill" style="width: 0%; background: ' + fillColor + ';" data-pct="' + r.pct.toFixed(1) + '"></div></div>';
+        html += '<div class="sound-result-pct">' + r.pct.toFixed(1) + '%</div>';
+        html += '</div>';
+      });
+      results.innerHTML = html;
+
+      // 动画填充
+      setTimeout(() => {
+        results.querySelectorAll('.sound-result-fill').forEach(bar => {
+          bar.style.width = bar.dataset.pct + '%';
+        });
+      }, 100);
+    }
+
+    // ===== AI 识别过程演示 =====
+    document.getElementById('runProcessBtn').addEventListener('click', function() {
+      this.disabled = true;
+      this.textContent = '⏳ 演示中...';
+
+      // 随机选一只鸟
+      const bird = selectorBirds[Math.floor(Math.random() * selectorBirds.length)];
+      const result = document.getElementById('processResult');
+      result.innerHTML = '<p style="font-size: 0.85rem; color: var(--muted);">⏳ 正在分析...</p>';
+
+      // 模拟识别过程
+      setTimeout(() => {
+        const confidence1 = 85 + Math.random() * 12;
+        const confidence2 = 2 + Math.random() * 5;
+        const confidence3 = 2 + Math.random() * 3;
+
+        result.innerHTML = `
+          <div style="text-align: center;">
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 4px;">${bird.name} ${confidence1.toFixed(1)}%</div>
+            <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 6px;">${bird.englishName}</div>
+            <div style="font-size: 0.85rem; color: var(--muted);">${otherBirdName(bird)} ${confidence2.toFixed(1)}%</div>
+            <div style="font-size: 0.85rem; color: var(--muted);">其他 ${confidence3.toFixed(1)}%</div>
+          </div>
+        `;
+
+        const btn = document.getElementById('runProcessBtn');
+        btn.disabled = false;
+        btn.textContent = '▶ 再次演示';
+      }, 2000);
+    });
+
+    function otherBirdName(bird) {
+      const others = BIRDS_DATA.filter(b => b.id !== bird.id);
+      return others[Math.floor(Math.random() * others.length)].name;
+    }
+
+    // ===== 工作流动画 =====
+    const workflowSteps = [
+      { label: '野外', desc: '鸟类在自然栖息地活动' },
+      { label: '智能相机', desc: '红外触发或定时拍摄的智能相机监测' },
+      { label: '拍摄照片', desc: '自动拍摄鸟类照片或视频' },
+      { label: 'AI 识别', desc: 'AI 模型自动识别鸟种和数量' },
+      { label: '发现鸟类', desc: '记录鸟种、置信度、时间、地点' },
+      { label: '记录数据', desc: '数据自动上传到云端数据库' },
+      { label: '形成数据库', desc: '长期积累形成鸟类监测数据库' },
+      { label: '分析种群变化', desc: 'AI 分析种群趋势，发现异常' },
+      { label: '保护措施', desc: '保护人员根据数据制定保护措施' }
+    ];
+
+    let workflowTimer = null;
+
+    document.getElementById('workflowPlayBtn').addEventListener('click', function() {
+      this.disabled = true;
+      const nodes = document.querySelectorAll('#workflowFlow .workflow-node');
+      const connectors = document.querySelectorAll('#workflowFlow .workflow-connector');
+      const status = document.getElementById('workflowStatus');
+      let step = 0;
+
+      // 重置
+      nodes.forEach(n => n.classList.remove('active', 'done'));
+      connectors.forEach(c => c.classList.remove('active'));
+
+      function nextStep() {
+        if (step > 0) {
+          nodes[step - 1].classList.remove('active');
+          nodes[step - 1].classList.add('done');
+          if (connectors[step - 1]) connectors[step - 1].classList.add('active');
+        }
+        if (step < nodes.length) {
+          nodes[step].classList.add('active');
+          // 将当前激活节点居中滚动到可视区域
+          nodes[step].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          status.innerHTML = '<p style="color: var(--primary); font-weight: 600;">' + workflowSteps[step].label + '：' + workflowSteps[step].desc + '</p>';
+          step++;
+          workflowTimer = setTimeout(nextStep, 1200);
+        } else {
+          status.innerHTML = '<p style="color: var(--success); font-weight: 600;">✓ 工作流完成！AI 帮助保护人员从发现鸟类到制定保护措施。</p>';
+          document.getElementById('workflowPlayBtn').disabled = false;
+        }
+      }
+      nextStep();
+    });
+
+    document.getElementById('workflowResetBtn').addEventListener('click', () => {
+      if (workflowTimer) clearTimeout(workflowTimer);
+      document.querySelectorAll('#workflowFlow .workflow-node').forEach(n => n.classList.remove('active', 'done'));
+      document.querySelectorAll('#workflowFlow .workflow-connector').forEach(c => c.classList.remove('active'));
+      document.getElementById('workflowStatus').innerHTML = '<p style="color: var(--muted); font-size: 0.9rem;">点击播放，观看 AI 保护工作流的完整过程</p>';
+      document.getElementById('workflowPlayBtn').disabled = false;
+    });
+  </script>
+</body>
+</html>

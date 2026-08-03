@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探索保护地 · AI × 飞鸟保护</title>
+  <link rel="stylesheet" href="_shared/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    /* ===== 页面专属样式（不修改共享 CSS） ===== */
+
+    /* 覆盖 initCommon 设置的 body padding，改由 hero 的 margin-top 统一处理顶部留白 */
+    body { padding-top: 0 !important; }
+
+    /* ---- Hero 区域 ---- */
+    .protection-hero {
+      margin-top: calc(var(--nav-height) + 44px);
+      position: relative;
+      padding: 92px 0 84px;
+      background: linear-gradient(135deg, #16332a 0%, #2F5D50 55%, #3a6b5c 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+    .protection-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 16% 82%, rgba(217, 154, 61, 0.20) 0%, transparent 55%),
+        radial-gradient(ellipse at 84% 18%, rgba(93, 140, 131, 0.34) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+    }
+    .protection-hero .container { position: relative; z-index: 1; }
+    .protection-hero .hero-tag {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 18px;
+    }
+    .protection-hero h1 {
+      color: #fff;
+      font-size: clamp(2.2rem, 6vw, 3.4rem);
+      margin-bottom: 20px;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+    }
+    .protection-hero .hero-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(1rem, 2.4vw, 1.28rem);
+      max-width: 760px;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .protection-hero .hero-meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-top: 36px;
+    }
+    .protection-hero .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.92rem;
+    }
+    .protection-hero .hero-meta-item strong {
+      color: var(--accent-light);
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* ---- 生态系统示意图节点 ---- */
+    .eco-system-diagram {
+      background: var(--bg2);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 48px 24px;
+      margin-top: 8px;
+    }
+    .eco-node { min-width: 120px; }
+    .eco-node .eco-sub {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      opacity: 0.75;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .eco-branches { gap: 28px; }
+
+    /* ---- 保护地类型卡片 ---- */
+    .habitat-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .habitat-card-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .habitat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .habitat-icon svg { width: 36px; height: 36px; }
+    .habitat-card h3 { margin: 0; }
+    .habitat-card .habitat-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .habitat-birds {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+    .habitat-birds .bird-label {
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-weight: 500;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+
+    /* ---- 湿地详解 ---- */
+    .wetland-detail {
+      background: linear-gradient(135deg, rgba(47, 93, 80, 0.04) 0%, rgba(93, 140, 131, 0.06) 100%);
+      border: 1.5px solid rgba(47, 93, 80, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+    }
+
+    /* ---- 湿地思维导图 ---- */
+    .mindmap {
+      padding: 48px 16px 32px;
+      margin-top: 40px;
+      background: linear-gradient(135deg, rgba(47, 93, 80, 0.04) 0%, rgba(93, 140, 131, 0.06) 100%);
+      border: 1.5px solid rgba(47, 93, 80, 0.12);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+    }
+    .mindmap-block { display: flex; flex-direction: column; align-items: center; }
+    .mindmap-block + .mindmap-block { margin-top: 56px; }
+
+    .mm-root {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(47, 93, 80, 0.28);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .mm-root.protect { background: var(--accent); box-shadow: 0 6px 18px rgba(217, 154, 61, 0.28); }
+
+    .mm-connector-v {
+      width: 2px;
+      height: 28px;
+      background: rgba(47, 93, 80, 0.3);
+    }
+    .mm-connector-v.gold { background: rgba(217, 154, 61, 0.3); }
+
+    .mm-branches {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .mm-branch {
+      flex: 1;
+      min-width: 220px;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .mm-branch-stem {
+      width: 2px;
+      height: 24px;
+      background: rgba(47, 93, 80, 0.3);
+    }
+    .mm-branch.gold .mm-branch-stem { background: rgba(217, 154, 61, 0.3); }
+    /* 水平连接线：每个分支绘制一段，首尾各半 */
+    .mm-branch::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(47, 93, 80, 0.3);
+    }
+    .mm-branch:first-child::after { left: 50%; }
+    .mm-branch:last-child::after { right: 50%; }
+    .mm-branch:only-child::after { display: none; }
+    .mm-branch.gold::after { background: rgba(217, 154, 61, 0.3); }
+
+    .mm-node {
+      background: var(--bg2);
+      color: var(--primary);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid rgba(47, 93, 80, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 2;
+    }
+    .mm-node .mm-node-icon { font-size: 1.1rem; }
+
+    .mm-leaves {
+      margin-top: 14px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mm-leaf {
+      background: var(--bg);
+      border: 1px solid rgba(47, 93, 80, 0.1);
+      border-radius: 10px;
+      padding: 8px 12px 8px 20px;
+      font-size: 0.85rem;
+      color: var(--ink);
+      position: relative;
+      margin-left: 12px;
+    }
+    /* 垂直连线段：从当前叶子延伸到下一个叶子 */
+    .mm-leaf::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -12px;
+      width: 2px;
+      height: calc(100% + 8px);
+      background: rgba(47, 93, 80, 0.25);
+    }
+    /* 最后一个叶子：垂直线只到水平短横线位置 */
+    .mm-leaf:last-child::before {
+      height: calc(50% + 8px);
+    }
+    /* 水平短横线：从垂直线连接到叶子 */
+    .mm-leaf::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -12px;
+      width: 12px;
+      height: 2px;
+      background: rgba(47, 93, 80, 0.25);
+      transform: translateY(-50%);
+    }
+    .mm-leaf.gold::before { background: rgba(217, 154, 61, 0.25); }
+    .mm-leaf.gold::after { background: rgba(217, 154, 61, 0.25); }
+
+    .mm-leaf-title { font-weight: 600; color: var(--primary); }
+    .mm-leaf.gold .mm-leaf-title { color: var(--accent); }
+    .mm-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.6;
+    }
+
+    /* ---- 生态地图（Leaflet） ---- */
+    .eco-map { position: relative; }
+    .map-hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+    .map-hint .hint-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: dotBlink 1.6s ease-in-out infinite;
+    }
+    @keyframes dotBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    #eco-leaflet-map {
+      width: 100%;
+      height: 520px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 4px solid rgba(255, 255, 255, 0.8);
+    }
+    .bird-marker {
+      background: transparent !important;
+      border: none !important;
+    }
+    .bird-marker span {
+      display: inline-block;
+      font-size: 22px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border: 2px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease;
+    }
+    .bird-marker:hover span { transform: scale(1.2); }
+    .leaflet-popup-content {
+      font-family: var(--font-sans);
+      min-width: 200px;
+    }
+
+    /* ---- 保护地卡片 ---- */
+    .protected-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-top: 48px;
+    }
+    .protected-card {
+      display: flex;
+      flex-direction: row;
+      background: var(--bg2);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .protected-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .protected-card-img {
+      flex: 0 0 40%;
+      min-height: 240px;
+      background: var(--bg3);
+      overflow: hidden;
+    }
+    .protected-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .protected-card:hover .protected-card-img img { transform: scale(1.05); }
+    .protected-card-body {
+      flex: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .protected-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .protected-card-header h3 {
+      font-size: 1.4rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .protected-card-level {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .protected-card-level.national { background: var(--primary); color: #fff; }
+    .protected-card-level.provincial { background: var(--accent); color: #fff; }
+    .protected-card-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+    .protected-card-species {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .protected-card-species .species-tag {
+      font-size: 0.75rem;
+      background: var(--bg3);
+      color: var(--ink);
+      padding: 3px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(47, 93, 80, 0.1);
+    }
+    .protected-card-footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .nav-btn:hover {
+      background: #b85e00;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ---- 地图 popup 地名链接 ---- */
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px !important;
+      box-shadow: var(--shadow-md) !important;
+      padding: 4px 8px !important;
+    }
+    .leaflet-popup-content {
+      margin: 10px 14px !important;
+      min-width: auto !important;
+    }
+    .popup-name-link {
+      display: inline-block;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .popup-name-link:hover { color: var(--accent); }
+
+    /* 卡片高亮动画 */
+    .protected-card.highlight {
+      animation: cardHighlight 1.8s ease-out;
+    }
+    @keyframes cardHighlight {
+      0% { box-shadow: 0 0 0 0 rgba(217, 154, 61, 0.6); }
+      30% { box-shadow: 0 0 0 8px rgba(217, 154, 61, 0.3); }
+      100% { box-shadow: var(--shadow-sm); }
+    }
+
+    /* ---- 威胁卡片 ---- */
+    .threat-card {
+      padding: 30px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      border-left: 4px solid var(--danger);
+    }
+    .threat-card .threat-icon {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: rgba(199, 84, 80, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .threat-card .threat-icon svg { width: 32px; height: 32px; }
+    .threat-card h3 {
+      margin-bottom: 8px;
+      color: var(--danger);
+    }
+    .threat-card .threat-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* ---- 底部引导 ---- */
+    .bridge-section {
+      background: linear-gradient(135deg, #16332a 0%, #2F5D50 100%);
+      color: #fff;
+      text-align: center;
+      padding: 72px 0;
+    }
+    .bridge-section h3 {
+      color: #fff;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      margin-bottom: 14px;
+    }
+    .bridge-section p {
+      color: rgba(255, 255, 255, 0.82);
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+
+    /* ---- 响应式 ---- */
+    @media (max-width: 768px) {
+      .protected-card { flex-direction: column; }
+      .protected-card-img { flex: none; min-height: 200px; }
+      #eco-leaflet-map { height: 400px; }
+    }
+    @media (max-width: 600px) {
+      .protection-hero { padding: 64px 0 56px; }
+      .eco-system-diagram { padding: 32px 14px; }
+      .threat-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-placeholder"></div>
+  <div id="story-nav-placeholder"></div>
+
+  <!-- ============ Hero 区域 ============ -->
+  <section class="protection-hero">
+    <div class="container">
+      <span class="hero-tag">故事线 02 · 找到它</span>
+      <h1>探索保护地</h1>
+      <p class="hero-subtitle">鸟为什么需要保护地？保护地不是围起来的一块地，而是一套完整的生态系统。</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><strong>6</strong><span>种保护地类型</span></div>
+        <div class="hero-meta-item"><strong>14</strong><span>个重点保护地点</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 第一部分：什么是鸟类保护地 ============ -->
+  <section class="section" id="what">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">01 · 概念</span>
+        <h2>什么是鸟类保护地？</h2>
+        <p>保护地为飞鸟提供食物、水源、繁殖与停歇的完整生境，是物种延续的根基。</p>
+      </div>
+
+      <div class="callout">
+        <p><strong>保护地的意义：</strong>保护地不是把鸟关起来，而是把鸟需要的<strong>水、食物、隐蔽所和繁殖空间</strong>一并保护起来。只有当这些要素作为一个整体存在时，鸟类种群才能稳定延续。任何一环缺失——比如芦苇被割光、水位骤降——都可能让一整片保护地失去功能。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 第二部分：不同类型的保护地 ============ -->
+  <section class="section" id="types" style="background: var(--bg3);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">02 · 类型</span>
+        <h2>不同类型的保护地</h2>
+        <p>不同鸟类依赖不同生境，因此保护地也呈现出多样的生态系统类型。</p>
+      </div>
+
+      <div class="grid grid-3">
+        <!-- 湿地 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 42 Q16 38 26 42 T46 42 T58 42" stroke="#5D8C83" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M6 50 Q16 46 26 50 T46 50 T58 50" stroke="#5D8C83" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M20 42 L20 24 M24 42 L24 20 M28 42 L28 26" stroke="#2F5D50" stroke-width="2" stroke-linecap="round"/>
+                <ellipse cx="24" cy="20" rx="3" ry="6" fill="#D99A3D"/>
+                <ellipse cx="28" cy="24" rx="2.5" ry="5" fill="#F0C674"/>
+              </svg>
+            </div>
+            <h3>湿地</h3>
+          </div>
+          <p class="habitat-desc">水域与陆地交错的过渡带，水草丰茂、食物链丰富，是水鸟最重要的栖息与繁殖场所。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">鸭类</span>
+            <span class="tag tag-habitat">鹭类</span>
+            <span class="tag tag-habitat">鸻鹬类</span>
+          </div>
+        </div>
+
+        <!-- 森林 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 46 L22 28 L30 46 Z" fill="#2F5D50"/>
+                <rect x="20" y="46" width="4" height="8" fill="#6B5840"/>
+                <path d="M34 50 L44 26 L54 50 Z" fill="#3A5F4A"/>
+                <rect x="41" y="50" width="4" height="8" fill="#6B5840"/>
+                <path d="M46 40 L50 30 L54 40 Z" fill="#5D8C83"/>
+              </svg>
+            </div>
+            <h3>森林</h3>
+          </div>
+          <p class="habitat-desc">茂密的乔木与灌丛提供筑巢空洞与丰富昆虫，是林栖鸟类和猛禽的核心生境。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">雉类</span>
+            <span class="tag tag-habitat">啄木鸟</span>
+            <span class="tag tag-habitat">猛禽</span>
+          </div>
+        </div>
+
+        <!-- 滩涂/海岸 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 40 L60 40 L60 56 L4 56 Z" fill="#C4A882"/>
+                <path d="M4 40 Q16 36 28 40 T52 40 T60 40" stroke="#5D8C83" stroke-width="2.5" fill="none"/>
+                <path d="M8 30 Q12 28 16 30" stroke="#5D8C83" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M28 26 Q32 24 36 26" stroke="#5D8C83" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="48" cy="18" r="3.5" fill="#D99A3D"/>
+              </svg>
+            </div>
+            <h3>滩涂 / 海岸</h3>
+          </div>
+          <p class="habitat-desc">潮间带泥沙富含底栖生物，是迁徙鸻鹬类长途跋涉中的关键"能量补给站"。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">鸻鹬类</span>
+            <span class="tag tag-habitat">鹭类</span>
+          </div>
+        </div>
+
+        <!-- 城市公园 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="26" width="14" height="26" fill="#5D8C83"/>
+                <rect x="11" y="30" width="2.5" height="3" fill="#F5F3EA"/>
+                <rect x="16" y="30" width="2.5" height="3" fill="#F5F3EA"/>
+                <rect x="11" y="38" width="2.5" height="3" fill="#F5F3EA"/>
+                <path d="M34 52 L34 34 L41 24 L48 34 L48 52 Z" fill="#2F5D50"/>
+                <rect x="39" y="42" width="2.5" height="10" fill="#6B5840"/>
+                <path d="M50 52 L50 38 L54 31 L58 38 L58 52 Z" fill="#3A5F4A"/>
+              </svg>
+            </div>
+            <h3>城市公园</h3>
+          </div>
+          <p class="habitat-desc">城市中的绿地与水系，是适应力强的鸟类与人类共处的近自然生境。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">白头鹎</span>
+            <span class="tag tag-habitat">珠颈斑鸠</span>
+            <span class="tag tag-habitat">麻雀</span>
+          </div>
+        </div>
+
+        <!-- 湖泊/河流 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 30 Q20 24 32 30 T56 30 L56 36 Q44 42 32 36 T8 36 Z" fill="#5D8C83"/>
+                <path d="M10 46 Q22 42 34 46 T58 46" stroke="#2F5D50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M14 54 Q26 50 38 54 T58 54" stroke="#5D8C83" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="22" cy="16" r="3.5" fill="#D99A3D"/>
+              </svg>
+            </div>
+            <h3>湖泊 / 河流</h3>
+          </div>
+          <p class="habitat-desc">开阔水面与浅滩交织，为游禽、涉禽提供觅食、栖息与越冬的广阔空间。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">雁鸭类</span>
+            <span class="tag tag-habitat">䴙䴘</span>
+          </div>
+        </div>
+
+        <!-- 草原 -->
+        <div class="card habitat-card">
+          <div class="habitat-card-head">
+            <div class="habitat-icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 52 L60 52" stroke="#6B5840" stroke-width="2"/>
+                <path d="M12 52 L12 34 M15 52 L17 40 M18 52 L20 36" stroke="#2F5D50" stroke-width="2" stroke-linecap="round"/>
+                <path d="M28 52 L28 30 M31 52 L33 36 M34 52 L36 32" stroke="#3A5F4A" stroke-width="2" stroke-linecap="round"/>
+                <path d="M44 52 L44 38 M47 52 L49 40 M50 52 L52 34" stroke="#2F5D50" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="48" cy="18" r="4.5" fill="#D99A3D"/>
+              </svg>
+            </div>
+            <h3>草原</h3>
+          </div>
+          <p class="habitat-desc">开阔的草甸与高原，利于地面筑巢鸟类和盘旋巡猎的猛禽生存。</p>
+          <div class="habitat-birds">
+            <span class="bird-label">代表鸟类</span>
+            <span class="tag tag-habitat">百灵</span>
+            <span class="tag tag-habitat">猛禽</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 第三部分：湿地保护地生态系统详解 ============ -->
+  <section class="section" id="wetland">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">03 · 深度解析</span>
+        <h2>湿地保护地生态系统详解</h2>
+        <p>以湿地为例，拆解一个保护地内部各要素如何协同支撑鸟类生存。</p>
+      </div>
+
+      <!-- 湿地生态系统思维导图 -->
+      <div class="mindmap" data-animate>
+        <!-- 第一部分：湿地保护地生态系统 -->
+        <div class="mindmap-block">
+          <div class="mm-root">🌿 湿地保护地生态系统</div>
+          <div class="mm-connector-v"></div>
+          <div class="mm-branches">
+            <!-- 湿地环境 -->
+            <div class="mm-branch">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">🌊</span>湿地环境</div>
+              <div class="mm-leaves">
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">水体</div>
+                  <div class="mm-sub">湖泊 · 河流 · 沼泽</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">土壤</div>
+                  <div class="mm-sub">富含有机质</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">气候条件</div>
+                  <div class="mm-sub">湿润环境</div>
+                </div>
+              </div>
+            </div>
+            <!-- 生物组成 -->
+            <div class="mm-branch">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">🐦</span>生物组成</div>
+              <div class="mm-leaves">
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">植物</div>
+                  <div class="mm-sub">芦苇 · 水草 · 湿地植物</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">动物</div>
+                  <div class="mm-sub">鸟类 · 鱼类 · 昆虫</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">微生物</div>
+                  <div class="mm-sub">分解有机物</div>
+                </div>
+              </div>
+            </div>
+            <!-- 生态功能 -->
+            <div class="mm-branch">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">⚙️</span>生态功能</div>
+              <div class="mm-leaves">
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">调节水资源</div>
+                  <div class="mm-sub">储存洪水 · 净化水质</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">维持生态平衡</div>
+                  <div class="mm-sub">食物链 · 物种保护</div>
+                </div>
+                <div class="mm-leaf">
+                  <div class="mm-leaf-title">气候调节</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 第二部分：湿地保护措施 -->
+        <div class="mindmap-block">
+          <div class="mm-root protect">🛡️ 湿地保护措施</div>
+          <div class="mm-connector-v gold"></div>
+          <div class="mm-branches gold">
+            <!-- 建立保护区 -->
+            <div class="mm-branch gold">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">🏞️</span>建立保护区</div>
+              <div class="mm-leaves gold">
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">自然保护区</div>
+                </div>
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">国家湿地公园</div>
+                </div>
+              </div>
+            </div>
+            <!-- 恢复湿地环境 -->
+            <div class="mm-branch gold">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">🌱</span>恢复湿地环境</div>
+              <div class="mm-leaves gold">
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">植被恢复</div>
+                </div>
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">水质改善</div>
+                </div>
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">生态修复</div>
+                </div>
+              </div>
+            </div>
+            <!-- 科技监测 -->
+            <div class="mm-branch gold">
+              <div class="mm-branch-stem"></div>
+              <div class="mm-node"><span class="mm-node-icon">🔬</span>科技监测</div>
+              <div class="mm-leaves gold">
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">AI 识别鸟类</div>
+                </div>
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">红外相机监测</div>
+                </div>
+                <div class="mm-leaf gold">
+                  <div class="mm-leaf-title">无人机巡护</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p><strong>保护地不是围起来的一块地，而是一套完整生态系统。</strong>水域提供饮水与游禽觅食场，芦苇提供隐蔽与筑巢空间，滩涂供养底栖生物供鸻鹬类探食。三类要素缺一不可，共同决定了湿地能承载多少、什么样的鸟类。保护湿地，本质是保护这套要素的<strong>结构与水位节律</strong>不被破坏。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 第四部分：中国鸟类保护地生态地图 ============ -->
+  <section class="section" id="map" style="background: var(--bg3);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">04 · 实地</span>
+        <h2>中国鸟类保护地生态地图</h2>
+        <p>从东北三江平原到云南热带森林，一张地图串起中国飞鸟保护的关键节点。</p>
+      </div>
+
+      <div class="eco-map">
+        <p class="map-hint"><span class="hint-dot"></span>点击地图上的标记，查看保护地详情与一键导航</p>
+        <div id="eco-leaflet-map"></div>
+      </div>
+
+      <div id="protected-cards" class="protected-cards"></div>
+    </div>
+  </section>
+
+  <!-- ============ 第五部分：保护地面临的威胁 ============ -->
+  <section class="section" id="threats">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">05 · 挑战</span>
+        <h2>保护地面临的威胁</h2>
+        <p>即使划定为保护地，飞鸟的家园依然承受着来自多方面的压力。</p>
+      </div>
+
+      <div class="grid grid-2">
+        <!-- 栖息地丧失 -->
+        <div class="card threat-card">
+          <div class="threat-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 50 L56 50" stroke="#6B5840" stroke-width="2"/>
+              <path d="M20 50 L26 24 L34 50 Z" fill="#C75450" opacity="0.85"/>
+              <rect x="24" y="50" width="4" height="8" fill="#6B5840"/>
+              <path d="M40 50 L46 34 L54 50 Z" fill="#3A5F4A"/>
+              <path d="M14 56 L24 50 M50 50 L58 56" stroke="#C75450" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>栖息地丧失</h3>
+            <p class="threat-desc">围垦、填埋与城市扩张不断蚕食湿地与林地，保护地之间被切割成孤岛，鸟类失去连片的觅食与迁徙通道。</p>
+          </div>
+        </div>
+
+        <!-- 环境污染 -->
+        <div class="card threat-card">
+          <div class="threat-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="18" y="20" width="14" height="24" fill="#6B7B74"/>
+              <rect x="22" y="14" width="6" height="8" fill="#6B7B74"/>
+              <path d="M22 44 Q18 50 22 56 M30 44 Q34 50 30 56" stroke="#5D8C83" stroke-width="2" fill="none"/>
+              <circle cx="44" cy="22" r="2.5" fill="#C75450"/>
+              <circle cx="50" cy="30" r="2.5" fill="#D99A3D"/>
+              <circle cx="44" cy="40" r="2.5" fill="#C75450"/>
+            </svg>
+          </div>
+          <div>
+            <h3>环境污染</h3>
+            <p class="threat-desc">农药、重金属与生活污水进入水体，沿食物链累积，导致鸟卵变薄、繁殖率下降，甚至引发种群崩溃。</p>
+          </div>
+        </div>
+
+        <!-- 气候变化 -->
+        <div class="card threat-card">
+          <div class="threat-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="8" fill="#D99A3D"/>
+              <path d="M22 6 L22 10 M22 34 L22 38 M6 22 L10 22 M34 22 L38 22" stroke="#D99A3D" stroke-width="2" stroke-linecap="round"/>
+              <rect x="38" y="26" width="6" height="26" rx="3" fill="#5D8C83"/>
+              <circle cx="41" cy="48" r="4" fill="#C75450"/>
+              <path d="M41 26 L41 18" stroke="#6B7B74" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>气候变化</h3>
+            <p class="threat-desc">气温与降水节律改变，使繁殖期与食物丰歉错位，湿地水位异常，越冬地北移，迁徙时间与路线被打乱。</p>
+          </div>
+        </div>
+
+        <!-- 人为干扰 -->
+        <div class="card threat-card">
+          <div class="threat-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="18" r="6" fill="#2F5D50"/>
+              <path d="M14 50 L14 34 Q14 28 22 28 Q30 28 30 34 L30 50 Z" fill="#2F5D50"/>
+              <circle cx="46" cy="42" r="12" fill="none" stroke="#C75450" stroke-width="2.5"/>
+              <path d="M38 34 L54 50" stroke="#C75450" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3>人为干扰</h3>
+            <p class="threat-desc">近距离拍摄、过度旅游与非法捕猎使鸟类频繁惊飞，耗费能量、中断繁殖，敏感物种被迫放弃原本的栖息与巢址。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 底部引导 ============ -->
+  <section class="bridge-section">
+    <div class="container">
+      <h3>保护地是飞鸟的家园，但仅靠保护地还不够。</h3>
+      <p>AI 正在成为保护飞鸟的新力量——从自动识别计数，到声纹监测、迁徙追踪与威胁预警，让守护更早、更广、更精准。</p>
+      <a href="ai-lab.html" class="btn btn-accent btn-lg">
+        了解 AI 如何识别飞鸟
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="_shared/js/birds-data.js"></script>
+  <script src="_shared/js/nav.js"></script>
+  <script>
+    // 初始化公共组件
+    initCommon('protection', 1);
+
+    // ============ WGS-84 → GCJ-02 坐标转换 ============
+    const PI = Math.PI;
+    const A = 6378245.0;
+    const EE = 0.00669342162296594323;
+
+    function transformLat(x, y) {
+      let ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+      ret += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+      ret += (20.0 * Math.sin(y * PI) + 40.0 * Math.sin(y / 3.0 * PI)) * 2.0 / 3.0;
+      ret += (160.0 * Math.sin(y / 12.0 * PI) + 320.0 * Math.sin(y * PI / 30.0)) * 2.0 / 3.0;
+      return ret;
+    }
+    function transformLng(x, y) {
+      let ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+      ret += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+      ret += (20.0 * Math.sin(x * PI) + 40.0 * Math.sin(x / 3.0 * PI)) * 2.0 / 3.0;
+      ret += (150.0 * Math.sin(x / 12.0 * PI) + 300.0 * Math.sin(x / 30.0 * PI)) * 2.0 / 3.0;
+      return ret;
+    }
+    function wgs84ToGcj02(lat, lng) {
+      let dLat = transformLat(lng - 105.0, lat - 35.0);
+      let dLng = transformLng(lng - 105.0, lat - 35.0);
+      let radLat = lat / 180.0 * PI;
+      let magic = Math.sin(radLat);
+      magic = 1 - EE * magic * magic;
+      let sqrtMagic = Math.sqrt(magic);
+      dLat = (dLat * 180.0) / ((A * (1 - EE)) / (magic * sqrtMagic) * PI);
+      dLng = (dLng * 180.0) / (A / sqrtMagic * Math.cos(radLat) * PI);
+      return { lat: lat + dLat, lng: lng + dLng };
+    }
+
+    // ============ 保护地数据（WGS-84 坐标） ============
+    const PROTECTED_AREAS = [
+      { id:"zhalong", name:"扎龙国家级自然保护区", lat:47.2, lng:124.0, province:"黑龙江", level:"国家级", description:"亚洲最大芦苇沼泽湿地，全球重要丹顶鹤繁殖地，约400只野生丹顶鹤在此栖息。", species:["丹顶鹤","白枕鹤","大天鹅","东方白鹳"], image:"assets/images/protected/zhalong.webp" },
+      { id:"poyang", name:"鄱阳湖国家级自然保护区", lat:29.1, lng:116.3, province:"江西", level:"国家级", description:"中国第一大淡水湖，全球98%的白鹤在此越冬，被誉为「候鸟天堂」。", species:["白鹤","白头鹤","东方白鹳","鸿雁"], image:"assets/images/protected/poyang.webp" },
+      { id:"chongming", name:"崇明东滩鸟类国家级自然保护区", lat:31.5, lng:121.9, province:"上海", level:"国家级", description:"长江入海口湿地，亚太候鸟迁徙关键驿站，每年迁徙候鸟超百万只。", species:["黑脸琵鹭","白头鹤","小天鹅","震旦鸦雀"], image:"assets/images/protected/chongming.webp" },
+      { id:"qinghai", name:"青海湖国家级自然保护区", lat:36.6, lng:100.5, province:"青海", level:"国家级", description:"青藏高原最大内陆咸水湖，斑头雁、渔鸥等高原特有水鸟重要繁殖地。", species:["斑头雁","渔鸥","棕头鸥","黑颈鹤"], image:"assets/images/protected/qinghai.webp" },
+      { id:"honghe", name:"云南红河蝴蝶谷（鸟类观测点）", lat:23.3, lng:103.6, province:"云南", level:"省级", description:"热带山地森林与喀斯特地貌，记录400余种鸟类，雉类和热带林鸟绝佳观察点。", species:["白鹇","红腹锦鸡","银耳相思鸟","蓝喉拟啄木鸟"], image:"assets/images/protected/honghe.webp" },
+      { id:"xianghai", name:"向海国家级自然保护区", lat:45.0, lng:122.3, province:"吉林", level:"国家级", description:"科尔沁草原湿地明珠，以鹤类、鹳类等大型水鸟著称，原始生态完好。", species:["丹顶鹤","白枕鹤","灰鹤","大鸨"], image:"assets/images/protected/xianghai.webp" },
+      { id:"yancheng", name:"江苏盐城湿地珍禽自然保护区", lat:33.5, lng:120.6, province:"江苏", level:"国家级", description:"太平洋西海岸最大滩涂湿地，丹顶鹤越冬地，全球濒危鸟类的重要栖息地。", species:["丹顶鹤","白头鹤","黑嘴鸥","震旦鸦雀"], image:"assets/images/protected/yancheng.webp" },
+      { id:"dongting", name:"湖南洞庭湖国家级自然保护区", lat:29.3, lng:113.0, province:"湖南", level:"国家级", description:"长江中游重要湖泊，东亚-澳大利西亚候鸟迁徙路线上的核心驿站。", species:["白鹤","白头鹤","灰鹤","白枕鹤"], image:"assets/images/protected/dongting.webp" },
+      { id:"erguna", name:"内蒙古额尔古纳湿地", lat:50.2, lng:120.1, province:"内蒙古", level:"国家级", description:"亚洲最大原生木本湿地，位于呼伦贝尔草原北端，候鸟繁殖与迁徙重要通道。", species:["丹顶鹤","白枕鹤","大天鹅","蓑羽鹤"], image:"assets/images/protected/erguna.webp" },
+      { id:"dashanbao", name:"云南大山包黑颈鹤自然保护区", lat:27.4, lng:103.3, province:"云南", level:"国家级", description:"青藏高原东部高山沼泽，全球黑颈鹤东部种群的主要越冬栖息地。", species:["黑颈鹤","灰鹤","斑头雁","赤麻鸭"], image:"assets/images/protected/dashanbao.webp" },
+      { id:"yellowriver", name:"山东黄河三角洲国家级自然保护区", lat:37.8, lng:119.0, province:"山东", level:"国家级", description:"黄河入海口新生湿地，东北亚内陆和环太平洋鸟类迁徙重要停歇地。", species:["丹顶鹤","白头鹤","东方白鹳","黑嘴鸥"], image:"assets/images/protected/yellowriver.webp" },
+      { id:"nanao", name:"广东南澳候鸟省级自然保护区", lat:23.4, lng:117.1, province:"广东", level:"省级", description:"南海北部岛屿湿地，候鸟南迁北往的「加油站」，记录有200余种鸟类。", species:["白鹭","岩鹭","黑脸琵鹭","白腹海雕"], image:"assets/images/protected/nanao.webp" },
+      { id:"gahai", name:"甘肃尕海则岔国家级自然保护区", lat:34.3, lng:102.5, province:"甘肃", level:"国家级", description:"青藏高原东北缘的高原湖泊与沼泽，黑颈鹤、斑头雁的重要繁殖地。", species:["黑颈鹤","斑头雁","赤麻鸭","棕头鸥"], image:"assets/images/protected/gahai.webp" },
+      { id:"sanjiang", name:"黑龙江三江国家级自然保护区", lat:48.0, lng:134.5, province:"黑龙江", level:"国家级", description:"东北三江平原沼泽湿地，东亚候鸟重要繁殖地，东方白鹳和鹤类家园。", species:["东方白鹳","丹顶鹤","白头鹤","白枕鹤"], image:"assets/images/protected/sanjiang.webp" }
+    ];
+
+    // ============ 初始化 Leaflet 地图 ============
+    const areasWithNav = PROTECTED_AREAS.map(area => {
+      const gcj = wgs84ToGcj02(area.lat, area.lng);
+      return { ...area, navUrl: `https://uri.amap.com/marker?position=${gcj.lng},${gcj.lat}&name=${encodeURIComponent(area.name)}&zoom=10` };
+    });
+
+    const map = L.map('eco-leaflet-map', {
+      renderer: L.canvas(),
+      zoomSnap: 0.25,
+      fadeAnimation: true,
+      zoomAnimation: true,
+      inertia: true,
+      inertiaDeceleration: 2000
+    }).setView([35.0, 105.0], 4);
+
+    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}', {
+      attribution: '&copy; 高德地图',
+      maxZoom: 18,
+      subdomains: ['webrd01', 'webrd02', 'webrd03', 'webrd04']
+    }).addTo(map);
+
+    function createBirdIcon() {
+      return L.divIcon({
+        className: 'bird-marker',
+        html: '<span>🐦</span>',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -12]
+      });
+    }
+
+    areasWithNav.forEach(area => {
+      const gcj = wgs84ToGcj02(area.lat, area.lng);
+      L.marker([gcj.lat, gcj.lng], { icon: createBirdIcon() })
+        .addTo(map)
+        .bindPopup(
+          '<a class="popup-name-link" data-id="' + area.id + '">' + area.name + '</a>',
+          { closeButton: false, className: 'name-only-popup' }
+        );
+    });
+
+    // 点击 popup 里的地名，跳转到对应简介卡片
+    map.on('popupopen', (e) => {
+      const link = e.popup.getElement().querySelector('.popup-name-link');
+      if (link) {
+        link.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          const card = document.getElementById('card-' + link.dataset.id);
+          if (card) {
+            map.closePopup();
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.add('highlight');
+            setTimeout(() => card.classList.remove('highlight'), 1800);
+          }
+        });
+      }
+    });
+
+    setTimeout(() => map.invalidateSize(), 300);
+
+    // ============ 渲染保护地卡片 ============
+    const cardsContainer = document.getElementById('protected-cards');
+    cardsContainer.innerHTML = areasWithNav.map(area => {
+      const isNational = area.level === '国家级';
+      return (
+        '<div class="protected-card" id="card-' + area.id + '" data-animate>' +
+          '<div class="protected-card-img">' +
+            '<img src="' + area.image + '" alt="' + area.name + '" loading="lazy" onerror="this.style.display=\'none\';">' +
+          '</div>' +
+          '<div class="protected-card-body">' +
+            '<div>' +
+              '<div class="protected-card-header">' +
+                '<h3>' + area.name + '</h3>' +
+                '<span class="protected-card-level ' + (isNational ? 'national' : 'provincial') + '">' + area.level + '</span>' +
+              '</div>' +
+              '<p class="protected-card-desc">' + area.description + '</p>' +
+              '<div class="protected-card-species">' +
+                area.species.map(s => '<span class="species-tag">' + s + '</span>').join('') +
+              '</div>' +
+            '</div>' +
+            '<div class="protected-card-footer">' +
+              '<a href="' + area.navUrl + '" target="_blank" class="nav-btn">' +
+                '🗺️ 一键导航' +
+                '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>' +
+              '</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  </script>
+</body>
+</html>
