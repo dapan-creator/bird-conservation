@@ -142,20 +142,6 @@
   <script>
     initCommon('bird-detail', 0);
 
-    /* AI 应用 emoji 映射 */
-    var AI_EMOJI = {
-      '图像识别': '\u{1F4F7}',
-      '声音识别': '\u{1F3B5}',
-      '智能监测': '\u{1F4E1}',
-      '种群分析': '\u{1F4CA}',
-      '无人机监测': '\u{1F681}'
-    };
-    var AI_DEFAULT_EMOJI = '\u{1F52C}';
-
-    function aiEmoji(name) {
-      return AI_EMOJI[name] || AI_DEFAULT_EMOJI;
-    }
-
     function escapeHtml(str) {
       var div = document.createElement('div');
       div.textContent = str;
@@ -204,15 +190,6 @@
       }).join('');
       protectionItems += infoItem('主要保护地', escapeHtml(bird.protectedAreas), 'protection-item');
       protectionItems += infoItem('监测方式', escapeHtml(bird.monitoring), 'protection-item');
-
-      /* AI 应用 */
-      var aiItems = bird.aiApplications.map(function (app) {
-        return '' +
-          '<div class="ai-tech-item">' +
-            '<div class="ai-tech-icon">' + aiEmoji(app) + '</div>' +
-            '<div class="ai-tech-name">' + escapeHtml(app) + '</div>' +
-          '</div>';
-      }).join('');
 
       root.innerHTML = '' +
 
@@ -310,18 +287,6 @@
               '<h2>人类如何保护它们？</h2>' +
             '</div>' +
             '<div class="info-grid">' + protectionItems + '</div>' +
-          '</div>' +
-
-          /* ⑦ AI 能帮它们什么？ */
-          '<div class="detail-section">' +
-            '<div class="detail-section-header">' +
-              '<span class="detail-section-num">7</span>' +
-              '<h2>AI 能帮它们什么？</h2>' +
-            '</div>' +
-            '<div class="ai-help-box">' +
-              '<h3>\u{1F9E0} AI 技术如何守护 ' + escapeHtml(bird.name) + '</h3>' +
-              '<div class="ai-tech-grid">' + aiItems + '</div>' +
-            '</div>' +
           '</div>' +
 
           /* 上一只 / 下一只 */

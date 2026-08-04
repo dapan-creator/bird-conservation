@@ -1,90 +1,70 @@
 /* ============================================
-   飞鸟图鉴数据 - 11 种核心鸟类
+   飞鸟图鉴数据 - 30 种核心鸟类
    ============================================ */
-
-// 鸟类 SVG 插图生成器
-function birdSVG(type, colors) {
-  const bg = colors.bg || '#5D8C83';
-  const body = colors.body || '#2F5D50';
-  const accent = colors.accent || '#D99A3D';
-  const light = colors.light || '#F5F3EA';
-
-  const silhouettes = {
-    small: `<path d="M50,55 Q35,48 30,55 Q25,62 35,68 Q45,72 55,68 Q65,65 60,58 Q55,52 50,55Z" fill="${body}"/>
-            <circle cx="42" cy="56" r="3" fill="${body}"/>
-            <path d="M38,54 L32,53 L38,55Z" fill="${accent}"/>
-            <path d="M55,60 Q65,55 72,58 L68,62 Q60,63 55,60Z" fill="${body}"/>
-            <path d="M35,68 Q33,75 36,78 L38,75Z" fill="${accent}"/>
-            <path d="M45,68 Q43,75 46,78 L48,75Z" fill="${accent}"/>`,
-    water: `<ellipse cx="50" cy="55" rx="22" ry="12" fill="${body}"/>
-            <circle cx="32" cy="50" r="8" fill="${body}"/>
-            <path d="M25,50 L18,49 L25,52Z" fill="${accent}"/>
-            <circle cx="30" cy="48" r="1.5" fill="${light}"/>
-            <path d="M65,50 Q75,45 80,52 L72,56 Q66,54 65,50Z" fill="${body}"/>
-            <path d="M45,62 L42,72 L48,72Z" fill="${accent}"/>
-            <path d="M52,62 L49,72 L55,72Z" fill="${accent}"/>
-            <path d="M30,58 Q35,62 30,65" stroke="${body}" stroke-width="2" fill="none"/>`,
-    raptor: `<path d="M50,50 Q38,45 30,50 Q25,55 30,60 Q40,65 50,62 Q60,60 65,55 Q62,48 50,50Z" fill="${body}"/>
-             <circle cx="38" cy="52" r="5" fill="${body}"/>
-             <path d="M33,52 L26,50 L33,54Z" fill="${accent}"/>
-             <circle cx="37" cy="51" r="1.2" fill="${light}"/>
-             <path d="M55,52 Q70,42 82,48 Q75,52 65,54Z" fill="${body}"/>
-             <path d="M58,48 Q72,38 80,44" stroke="${body}" stroke-width="1.5" fill="none"/>
-             <path d="M45,62 L42,74 L48,74Z" fill="${accent}"/>
-             <path d="M52,62 L49,74 L55,74Z" fill="${accent}"/>`,
-    crane: `<ellipse cx="50" cy="55" rx="14" ry="18" fill="${body}"/>
-            <circle cx="50" cy="35" r="7" fill="${body}"/>
-            <path d="M50,28 L50,20 L52,20 L52,28Z" fill="${accent}"/>
-            <circle cx="48" cy="34" r="1.2" fill="${light}"/>
-            <path d="M50,42 L46,56 L54,56Z" fill="${accent}"/>
-            <path d="M38,55 Q25,50 18,55 Q22,60 35,60Z" fill="${body}"/>
-            <path d="M62,55 Q75,50 82,55 Q78,60 65,60Z" fill="${body}"/>
-            <path d="M48,72 L45,85 L50,85Z" fill="${accent}"/>
-            <path d="M52,72 L50,85 L55,85Z" fill="${accent}"/>`,
-    duck: `<ellipse cx="52" cy="52" rx="18" ry="12" fill="${body}"/>
-           <circle cx="35" cy="48" r="7" fill="${body}"/>
-           <path d="M28,48 L20,47 L28,50Z" fill="${accent}"/>
-           <circle cx="33" cy="46" r="1.2" fill="${light}"/>
-           <path d="M45,40 Q48,33 52,36 Q50,40 45,40Z" fill="${body}"/>
-           <path d="M65,50 Q75,46 80,52 L72,56 Q66,54 65,50Z" fill="${body}"/>
-           <path d="M46,62 L43,73 L49,73Z" fill="${accent}"/>
-           <path d="M54,62 L51,73 L57,73Z" fill="${accent}"/>`,
-    ibis: `<ellipse cx="52" cy="52" rx="14" ry="16" fill="${body}"/>
-           <path d="M45,38 Q42,30 40,25 Q44,28 48,35Z" fill="${body}"/>
-           <path d="M40,25 Q33,22 28,26 Q35,25 40,28Z" fill="${accent}"/>
-           <circle cx="42" cy="32" r="1.2" fill="${light}"/>
-           <path d="M38,55 Q25,52 20,58 Q25,60 35,58Z" fill="${body}"/>
-           <path d="M65,55 Q75,52 80,58 Q75,60 68,58Z" fill="${body}"/>
-           <path d="M48,68 L46,80 L51,80Z" fill="${accent}"/>
-           <path d="M54,68 L52,80 L57,80Z" fill="${accent}"/>`
-  };
-
-  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="bg-${type}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${bg}" stop-opacity="0.8"/>
-        <stop offset="100%" stop-color="${body}" stop-opacity="0.9"/>
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" fill="url(#bg-${type})"/>
-    <circle cx="80" cy="20" r="15" fill="${light}" opacity="0.08"/>
-    <circle cx="15" cy="80" r="20" fill="${accent}" opacity="0.06"/>
-    <g transform="translate(0, 5)">
-      ${silhouettes[type] || silhouettes.small}
-    </g>
-  </svg>`;
-}
 
 // 鸟类数据
 const BIRDS_DATA = [
+  /* ===== 城市常见鸟（访客最熟悉）===== */
+  {
+    id: "maque",
+    name: "麻雀",
+    pinyin: "má que",
+    englishName: "Eurasian Tree Sparrow",
+    scientificName: "Passer montanus",
+    habitat: ["城市", "农田", "村庄"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "雀形目", family: "雀科" },
+    bodySize: "约 12-15 cm",
+    weight: "约 24-30 g",
+    lifespan: "约 3-5 年",
+    habitatEnv: "人类居住区、农田、村落、城市公园",
+    distribution: "欧亚大陆广泛分布，中国各地均有",
+    migration: "留鸟（全年可见）",
+    diet: "种子、谷物、小型昆虫",
+    feedingMethod: "在地面上跳跃觅食，集群活动",
+    appearance: "头顶栗褐色，脸颊有黑色斑块，喉部黑色，背部褐色具纵纹",
+    call: "单调的「chirp」声，集群时喧闹",
+    behavior: "高度群居，常成群结队活动，与人类伴生",
+    threats: ["曾被列为「四害」遭大规模捕杀", "农药使用", "现代建筑缺少筑巢缝隙"],
+    protection: ["列入国家「三有」保护动物名录", "禁止非法捕杀", "城市巢址保护"],
+    protectedAreas: "城市社区、农田生态区",
+    monitoring: "公众观察、群体计数",
+    description: "麻雀是中国人最熟悉的鸟，曾因被误列为「四害」而遭到大规模捕杀，种群数量一度锐减。如今虽已恢复，仍是公众科普中关于「生态平衡」最经典的反面教材。"
+  },
+  {
+    id: "xique",
+    name: "喜鹊",
+    pinyin: "xǐ què",
+    englishName: "Oriental Magpie",
+    scientificName: "Pica serica",
+    habitat: ["城市", "农田", "林地边缘"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "雀形目", family: "鸦科" },
+    bodySize: "约 38-48 cm",
+    weight: "约 200-280 g",
+    lifespan: "约 8-10 年",
+    habitatEnv: "城市、村庄、农田、公园周边林地",
+    distribution: "中国大部分地区（除青藏高原腹地外）",
+    migration: "留鸟（全年可见）",
+    diet: "昆虫、小型动物、果实、种子、腐肉",
+    feedingMethod: "在地面行走觅食，杂食性强，偶尔会偷食其他鸟卵",
+    appearance: "头颈黑色带蓝色金属光泽，背部黑色，腹部白色，翼上有白色斑块，尾长",
+    call: "响亮粗糙的「嘎-嘎-嘎」声",
+    behavior: "聪明机警，喜成对或家族群活动，会衔取闪亮物品筑巢",
+    threats: ["农药导致食物减少", "城市巢址减少", "非法捕猎"],
+    protection: ["列入国家「三有」保护动物名录", "城市绿化保护", "禁止非法捕猎"],
+    protectedAreas: "城市公园、农田林网",
+    monitoring: "公众观察、巢址调查",
+    description: "喜鹊在中国文化中象征吉祥，是城市和乡村最常见的鸦科鸟类。它们智力极高，能识别镜子中的自己，是研究鸟类认知能力的模式物种之一。"
+  },
   {
     id: "baitoubei",
     name: "白头鹎",
     pinyin: "bái tóu bēi",
     englishName: "Light-vented Bulbul",
     scientificName: "Pycnonotus sinensis",
-    type: "small",
-    colors: { bg: "#8BAC92", body: "#3A5F4A", accent: "#F0C674", light: "#FFFFFF" },
     habitat: ["城市", "林地", "公园"],
     protectionLevel: 3,
     protectionLabel: "三有保护",
@@ -97,14 +77,13 @@ const BIRDS_DATA = [
     migration: "留鸟（全年可见）",
     diet: "果实、昆虫、花蜜",
     feedingMethod: "在树冠层和灌丛中觅食，善跳跃",
-    appearance: "头顶白色，枕部白色明显，背部灰绿褐色，腹部灰白色",
+    appearance: "头顶黑色，枕部白色明显（「白头」之名由此而来），背部灰绿褐色，腹部灰白色",
     call: "清脆多变的「chi-chi-chi」声，鸣声婉转",
     behavior: "喜群居，活泼好动，常在枝头跳跃鸣叫",
     threats: ["城市扩张导致栖息地变化", "窗户碰撞", "人为干扰"],
     protection: ["列入国家「三有」保护动物名录", "城市绿地保护", "公众科普教育"],
     protectedAreas: "城市公园、社区绿地",
     monitoring: "公众观察记录、声音监测",
-    aiApplications: ["图像识别", "声音识别", "智能监测"],
     description: "白头鹎是中国南方城市中最常见的鸟类之一，因其头顶白色羽毛而得名「白头」。它们适应力强，常在城市公园和居民区活动，是城市生态的重要指示物种。"
   },
   {
@@ -113,8 +92,6 @@ const BIRDS_DATA = [
     pinyin: "zhū jǐng bān jiū",
     englishName: "Spotted Dove",
     scientificName: "Spilopelia chinensis",
-    type: "small",
-    colors: { bg: "#C4A882", body: "#6B5840", accent: "#D99A3D", light: "#F5F3EA" },
     habitat: ["城市", "农田", "林地边缘"],
     protectionLevel: 3,
     protectionLabel: "三有保护",
@@ -134,8 +111,227 @@ const BIRDS_DATA = [
     protection: ["列入国家「三有」保护动物名录", "农田生态保护", "减少农药使用宣传"],
     protectedAreas: "城市公园、农田保护区",
     monitoring: "声音监测、公众观察",
-    aiApplications: ["图像识别", "声音识别"],
     description: "珠颈斑鸠因后颈处独特的黑白珠状斑纹而得名，是中国城市和乡村常见的鸠鸽类鸟类。它们的叫声低沉而有节奏，是许多人熟悉的自然之声。"
+  },
+  {
+    id: "wudong",
+    name: "乌鸫",
+    pinyin: "wū dōng",
+    englishName: "Chinese Blackbird",
+    scientificName: "Turdus mandarinus",
+    habitat: ["城市", "公园", "林地"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "雀形目", family: "鸫科" },
+    bodySize: "约 23-29 cm",
+    weight: "约 80-120 g",
+    lifespan: "约 5-8 年",
+    habitatEnv: "城市公园、林地、花园、居民区",
+    distribution: "中国中东部、南部地区",
+    migration: "留鸟（北方部分种群冬季南迁）",
+    diet: "昆虫、蚯蚓、果实、浆果",
+    feedingMethod: "在地面奔跑觅食，常翻动落叶寻找无脊椎动物",
+    appearance: "雄鸟通体黑色，嘴和眼圈橙黄色；雌鸟体色偏褐",
+    call: "鸣声婉转多变，被誉为「百舌鸟」，能模仿其他鸟叫",
+    behavior: "性机警，善鸣唱，清晨和黄昏最为活跃",
+    threats: ["城市光污染影响鸣唱", "农药导致食物减少", "窗户碰撞"],
+    protection: ["列入国家「三有」保护动物名录", "城市绿地保护", "减少光污染宣传"],
+    protectedAreas: "城市公园、城市绿地",
+    monitoring: "声音监测、公众观察",
+    description: "乌鸫因其鸣声婉转多变而被称作「百舌鸟」，是城市中最优秀的歌手之一。它们对城市环境的适应力强，已成为中国南方许多城市公园的标志性鸟类。"
+  },
+
+  /* ===== 公园 / 林地常见 ===== */
+  {
+    id: "daisheng",
+    name: "戴胜",
+    pinyin: "dài shèng",
+    englishName: "Eurasian Hoopoe",
+    scientificName: "Upupa epops",
+    habitat: ["公园", "农田", "林地边缘"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "犀鸟目", family: "戴胜科" },
+    bodySize: "约 25-29 cm",
+    weight: "约 55-85 g",
+    lifespan: "约 8-10 年",
+    habitatEnv: "开阔林地、农田、公园、村落周边",
+    distribution: "中国大部分地区",
+    migration: "部分迁徙（北方种群南迁越冬）",
+    diet: "昆虫、蚯蚓、蜗牛、小型爬行动物",
+    feedingMethod: "在地面行走觅食，用长弯嘴探入土中捕食",
+    appearance: "头具橙黄色扇形冠羽（可开合），体羽粉棕色，翼和尾具黑白相间条纹",
+    call: "低沉的「咕-咕-咕」三声一度",
+    behavior: "在地面行走自如，受惊时冠羽张开，营巢于树洞",
+    threats: ["农药导致昆虫减少", "古树减少导致巢址不足", "人为干扰"],
+    protection: ["列入国家「三有」保护动物名录", "古树保护", "减少农药使用"],
+    protectedAreas: "城市公园、农田林网",
+    monitoring: "公众观察、巢址调查",
+    description: "戴胜因头顶可开合的扇形冠羽而得名，被誉为「最优雅的鸟」。它们以捕食害虫著称，是农业生态中的益鸟，也因巢穴散发特殊气味而被俗称「臭姑姑」。"
+  },
+  {
+    id: "putongcuiniao",
+    name: "普通翠鸟",
+    pinyin: "pǔ tōng cuì niǎo",
+    englishName: "Common Kingfisher",
+    scientificName: "Alcedo atthis",
+    habitat: ["河流", "湖泊", "湿地"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "佛法僧目", family: "翠鸟科" },
+    bodySize: "约 16-17 cm",
+    weight: "约 25-40 g",
+    lifespan: "约 5-7 年",
+    habitatEnv: "清澈的溪流、河流、湖泊、池塘、湿地",
+    distribution: "中国大部分地区，北方种群冬季南迁",
+    migration: "部分迁徙（北方种群南迁越冬）",
+    diet: "小鱼、水生昆虫、虾、蝌蚪",
+    feedingMethod: "在枝头或空中悬停后俯冲入水捕鱼",
+    appearance: "上体金属蓝绿色，下体橙棕色，雄鸟嘴全黑色，雌鸟下嘴基有橙红色斑",
+    call: "尖锐的「pee-pee」声，飞行时常发出",
+    behavior: "单独活动，领域性强，在土岸挖洞营巢",
+    threats: ["水体污染导致鱼类减少", "河岸硬化导致无法筑巢", "人为干扰"],
+    protection: ["列入国家「三有」保护动物名录", "河岸生态保护", "水质保护"],
+    protectedAreas: "湿地公园、河流保护区",
+    monitoring: "图像识别、河岸巡查",
+    description: "普通翠鸟因其鲜艳的金属蓝绿色羽毛而被称作「飞行的宝石」。它们是水质的指示物种，只生活在鱼类丰富、水质清澈的水域。"
+  },
+  {
+    id: "dabanzhuomuniao",
+    name: "大斑啄木鸟",
+    pinyin: "dà bān zhuó mù niǎo",
+    englishName: "Great Spotted Woodpecker",
+    scientificName: "Dendrocopos major",
+    habitat: ["林地", "公园", "山区"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "鴷形目", family: "啄木鸟科" },
+    bodySize: "约 22-23 cm",
+    weight: "约 60-90 g",
+    lifespan: "约 5-10 年",
+    habitatEnv: "落叶林、混交林、城市公园、果园",
+    distribution: "中国大部分地区",
+    migration: "留鸟（全年可见）",
+    diet: "树皮下的昆虫幼虫、蚂蚁、坚果、种子",
+    feedingMethod: "用强直的嘴敲击树皮，用长舌探入树洞勾取昆虫",
+    appearance: "黑白配色，雄鸟后头有红色斑块，幼鸟头顶红色，腹部白色，尾下红色",
+    call: "尖锐的「chik」声，敲击树干会发出响亮的「咚咚咚」声",
+    behavior: "在树干上垂直攀爬，用尾羽支撑身体，营巢于树洞",
+    threats: ["古树和枯树减少导致巢址不足", "森林碎片化", "农药影响昆虫数量"],
+    protection: ["列入国家「三有」保护动物名录", "保留枯树和古树", "森林生态保护"],
+    protectedAreas: "城市公园、森林保护区",
+    monitoring: "声音监测、图像识别、巢址调查",
+    description: "大斑啄木鸟是「森林医生」的代表，以敲击树干捕食害虫著称。它们每秒可啄击树干 20 次，头部有特殊的减震结构防止脑震荡，是仿生学研究的经典对象。"
+  },
+  {
+    id: "hongzuilanque",
+    name: "红嘴蓝鹊",
+    pinyin: "hóng zuǐ lán què",
+    englishName: "Red-billed Blue Magpie",
+    scientificName: "Urocissa erythroryncha",
+    habitat: ["林地", "山区", "公园"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "雀形目", family: "鸦科" },
+    bodySize: "约 53-68 cm（含长尾）",
+    weight: "约 150-200 g",
+    lifespan: "约 8-10 年",
+    habitatEnv: "山地森林、丘陵林地、城市公园",
+    distribution: "中国中南部、东部、西南山区",
+    migration: "留鸟（全年可见）",
+    diet: "昆虫、果实、小型爬行动物、鸟卵",
+    feedingMethod: "在树冠层和地面觅食，杂食性强",
+    appearance: "头颈黑色，头顶后部有白斑，体羽蓝紫色，嘴和腿鲜红色，尾极长",
+    call: "响亮刺耳的「pee-pee-pee」声，常边飞边叫",
+    behavior: "成小群活动，飞行时尾羽飘逸，性格机警喧闹",
+    threats: ["森林砍伐", "非法捕猎", "农药影响食物"],
+    protection: ["列入国家「三有」保护动物名录", "森林保护", "禁止非法捕猎"],
+    protectedAreas: "山地森林公园、自然保护区",
+    monitoring: "公众观察、图像识别",
+    description: "红嘴蓝鹊因红嘴、蓝羽、长尾而被称为「山中凤凰」，是中国山林中最美的鸦科鸟类之一。它们飞行时尾羽飘逸如带，常成群在林间穿梭，构成一幅动态的山水画卷。"
+  },
+  {
+    id: "hongsun",
+    name: "红隼",
+    pinyin: "hóng sǔn",
+    englishName: "Common Kestrel",
+    scientificName: "Falco tinnunculus",
+    habitat: ["城市", "农田", "草原"],
+    protectionLevel: 2,
+    protectionLabel: "国家二级",
+    classification: { order: "隼形目", family: "隼科" },
+    bodySize: "约 32-35 cm",
+    weight: "约 150-250 g",
+    lifespan: "约 8-12 年",
+    habitatEnv: "开阔地带、城市高楼、农田、草原、丘陵",
+    distribution: "中国大部分地区",
+    migration: "部分迁徙（北方种群南迁）",
+    diet: "鼠类、小型鸟类、蜥蜴、大型昆虫",
+    feedingMethod: "在空中悬停定位猎物后俯冲捕杀，或从栖木出击",
+    appearance: "雄鸟头灰色，背红棕色带黑斑，尾灰色端黑；雌鸟通体棕褐色带纵纹",
+    call: "尖锐的「kai-kai-kai」声，繁殖期尤为响亮",
+    behavior: "适应性强，常在城市高楼、电线塔上营巢，能在空中定点悬停",
+    threats: ["鼠药二次中毒", "城市巢址减少", "非法捕猎"],
+    protection: ["国家二级保护动物", "禁止非法捕猎", "推广生态灭鼠", "城市巢址保护"],
+    protectedAreas: "城市绿地、草原保护区",
+    monitoring: "图像识别、巢址调查",
+    description: "红隼是城市上空最常见的猛禽，以「空中悬停」捕食闻名。它们适应城市生活，常在高楼筑巢，是城市生态系统中控制鼠害和小型鸟群的重要捕食者。"
+  },
+
+  /* ===== 湿地常见水鸟 ===== */
+  {
+    id: "bailu",
+    name: "白鹭",
+    pinyin: "bái lù",
+    englishName: "Little Egret",
+    scientificName: "Egretta garzetta",
+    habitat: ["湿地", "河流", "湖泊"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "鹈形目", family: "鹭科" },
+    bodySize: "约 55-65 cm",
+    weight: "约 350-600 g",
+    lifespan: "约 8-10 年",
+    habitatEnv: "浅水湿地、河流、湖泊、水田、鱼塘",
+    distribution: "中国长江以南广泛分布，北方种群夏季繁殖",
+    migration: "部分迁徙（北方种群冬季南迁）",
+    diet: "小鱼、虾、蛙、水生昆虫",
+    feedingMethod: "在浅水中缓步行走或静立伺机捕食",
+    appearance: "通体白色，繁殖期头部和背部有细长装饰羽，嘴和腿黑色，趾黄色",
+    call: "粗哑低沉的「ga-ga」声",
+    behavior: "常成群活动，营巢于乔木或竹林顶部，形成鹭鸟群落",
+    threats: ["湿地减少", "水体污染", "人为干扰营巢地"],
+    protection: ["列入国家「三有」保护动物名录", "湿地保护", "鹭鸟繁殖地保护"],
+    protectedAreas: "湿地公园、水鸟保护区",
+    monitoring: "图像识别、种群调查",
+    description: "白鹭是中国湿地最常见的白色水鸟，因「两个黄鹂鸣翠柳，一行白鹭上青天」而家喻户晓。它们的羽毛曾因装饰价值遭到大规模猎杀，是早期鸟类保护运动的导火索。"
+  },
+  {
+    id: "canglu",
+    name: "苍鹭",
+    pinyin: "cāng lù",
+    englishName: "Grey Heron",
+    scientificName: "Ardea cinerea",
+    habitat: ["湿地", "湖泊", "河流"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "鹈形目", family: "鹭科" },
+    bodySize: "约 90-98 cm",
+    weight: "约 1-2 kg",
+    lifespan: "约 10-15 年",
+    habitatEnv: "湖泊、河流、湿地、水库、鱼塘",
+    distribution: "中国大部分地区",
+    migration: "部分迁徙（北方种群冬季南迁）",
+    diet: "鱼、蛙、小型哺乳动物、水生昆虫",
+    feedingMethod: "在浅水中长时间静立伺机啄击捕食",
+    appearance: "体型大，体羽灰色，头颈白色，有黑色冠羽和过眼纹，飞行时颈缩回",
+    call: "粗哑的「frank」声，繁殖期有求偶叫声",
+    behavior: "性孤僻，常单独静立水边数小时不动，俗称「长脖老等」",
+    threats: ["湿地减少", "水体污染", "鱼塘驱赶导致觅食地减少"],
+    protection: ["列入国家「三有」保护动物名录", "湿地保护", "水系生态修复"],
+    protectedAreas: "湿地公园、水鸟保护区",
+    monitoring: "图像识别、种群调查",
+    description: "苍鹭因常长时间静立水中等待猎物而俗称「长脖老等」，是中国体型最大的常见鹭类。它们的耐心与捕食效率令人印象深刻，是湿地食物链顶层的代表性鸟类。"
   },
   {
     id: "xiaopiti",
@@ -143,8 +339,6 @@ const BIRDS_DATA = [
     pinyin: "xiǎo pì tī",
     englishName: "Little Grebe",
     scientificName: "Tachybaptus ruficollis",
-    type: "water",
-    colors: { bg: "#5D8C83", body: "#3A4A45", accent: "#D99A3D", light: "#F5F3EA" },
     habitat: ["湿地", "湖泊", "池塘"],
     protectionLevel: 3,
     protectionLabel: "三有保护",
@@ -164,47 +358,97 @@ const BIRDS_DATA = [
     protection: ["列入国家「三有」保护动物名录", "湿地保护与修复", "水质监测"],
     protectedAreas: "湿地公园、城市水系",
     monitoring: "湿地监测、图像识别",
-    aiApplications: ["图像识别", "智能监测"],
     description: "小䴙䴘是湿地中最常见的水鸟之一，体型小巧圆润，善于潜水。它们是湿地生态系统健康的指示物种，其种群数量直接反映水质和湿地环境状况。"
   },
   {
-    id: "heilianpilu",
-    name: "黑脸琵鹭",
-    pinyin: "hēi liǎn pí lù",
-    englishName: "Black-faced Spoonbill",
-    scientificName: "Platalea minor",
-    type: "ibis",
-    colors: { bg: "#4A7C6F", body: "#2A4A40", accent: "#F0C674", light: "#FFFFFF" },
-    habitat: ["湿地", "滩涂", "河口"],
-    protectionLevel: 1,
-    protectionLabel: "国家一级",
-    classification: { order: "鹈形目", family: "鹮科" },
-    bodySize: "约 74-85 cm",
-    weight: "约 1.5-2 kg",
-    lifespan: "约 15-20 年",
-    habitatEnv: "沿海湿地、滩涂、河口、红树林",
-    distribution: "东亚沿海地区，繁殖于朝鲜半岛，越冬于中国南方、台湾、越南等",
-    migration: "候鸟（长距离迁徙）",
-    diet: "小鱼、虾、蟹、水生昆虫",
-    feedingMethod: "用匙形嘴在水中左右扫动觅食",
-    appearance: "面部裸露呈黑色，嘴呈匙形，全身白色，繁殖期头部有黄色冠羽",
-    call: "较少鸣叫，繁殖期发出低沉的咕咕声",
-    behavior: "成群活动，觅食时群体协作，用特有的扫食方式在浅水中觅食",
-    threats: ["沿海开发导致栖息地丧失", "环境污染", "人为干扰", "气候变化影响潮间带"],
-    protection: ["国家一级保护动物", "东亚-澳大利西亚迁徙路线保护", "关键湿地保护"],
-    protectedAreas: "盐城湿地、深圳福田红树林、台湾曾文溪口",
-    monitoring: "卫星追踪、AI 图像识别、种群调查",
-    aiApplications: ["图像识别", "智能监测", "种群分析"],
-    description: "黑脸琵鹭是全球濒危水鸟之一，因其面部黑色、嘴形如琵琶而得名。全球种群仅约 6000 只，是东亚-澳大利西亚迁徙路线上最重要的保护物种之一。"
+    id: "banzuiya",
+    name: "斑嘴鸭",
+    pinyin: "bān zuǐ yā",
+    englishName: "Eastern Spot-billed Duck",
+    scientificName: "Anas zonorhyncha",
+    habitat: ["湖泊", "湿地", "河流"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "雁形目", family: "鸭科" },
+    bodySize: "约 50-64 cm",
+    weight: "约 0.8-1.3 kg",
+    lifespan: "约 8-10 年",
+    habitatEnv: "湖泊、湿地、河流、水库、水田",
+    distribution: "中国东部、南部广泛分布",
+    migration: "部分迁徙（北方种群南迁，南方种群留居）",
+    diet: "水生植物、种子、水生昆虫、小型螺贝",
+    feedingMethod: "在浅水滤食或倒立觅食，也会上岸啄食",
+    appearance: "体羽棕褐色，嘴黑色端部黄色（斑嘴），翼镜蓝绿色带白色边缘",
+    call: "雌鸟发出响亮的「quack」声，雄鸟叫声较沙哑",
+    behavior: "成对或小群活动，营巢于水边草丛",
+    threats: ["湿地减少", "水体污染", "误食铅弹"],
+    protection: ["列入国家「三有」保护动物名录", "湿地保护", "水质保护"],
+    protectedAreas: "湿地公园、湖泊保护区",
+    monitoring: "图像识别、种群调查",
+    description: "斑嘴鸭因嘴端有黄色斑块而得名，是中国最常见的野鸭之一。它们对湿地环境变化敏感，是湿地生态监测的重点物种。"
   },
+  {
+    id: "heichichangjiaoyu",
+    name: "黑翅长脚鹬",
+    pinyin: "hēi chì cháng jiǎo yù",
+    englishName: "Black-winged Stilt",
+    scientificName: "Himantopus himantopus",
+    habitat: ["湿地", "滩涂", "湖泊"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "鸻形目", family: "反嘴鹬科" },
+    bodySize: "约 35-40 cm",
+    weight: "约 160-220 g",
+    lifespan: "约 5-8 年",
+    habitatEnv: "浅水湿地、盐田、滩涂、湖泊浅水区",
+    distribution: "中国大部分地区，繁殖于北方，越冬于南方",
+    migration: "候鸟（中长距离迁徙）",
+    diet: "水生昆虫、小型甲壳动物、螺、小鱼",
+    feedingMethod: "在浅水中行走，用细长嘴在水中探寻猎物",
+    appearance: "腿极长呈粉红色，体羽黑白对比鲜明，翼黑色，头颈白或带黑色斑",
+    call: "尖锐的「kep-kep」声，飞行时持续鸣叫",
+    behavior: "成群活动，警觉性强，繁殖期会集体驱赶入侵者",
+    threats: ["湿地围垦", "水体污染", "繁殖地人为干扰"],
+    protection: ["列入国家「三有」保护动物名录", "湿地保护", "繁殖地管理"],
+    protectedAreas: "盐城湿地、渤海湾湿地",
+    monitoring: "图像识别、种群调查",
+    description: "黑翅长脚鹬因拥有鸟类中最长的粉色细腿而被称为「鸟中超模」，是鸻鹬类中最具辨识度的物种之一。它们成群活动于浅水湿地，是湿地生态的指示物种。"
+  },
+  {
+    id: "fengtoumaiji",
+    name: "凤头麦鸡",
+    pinyin: "fèng tóu mài jī",
+    englishName: "Northern Lapwing",
+    scientificName: "Vanellus vanellus",
+    habitat: ["农田", "湿地", "滩涂"],
+    protectionLevel: 3,
+    protectionLabel: "三有保护",
+    classification: { order: "鸻形目", family: "鸻科" },
+    bodySize: "约 28-33 cm",
+    weight: "约 150-300 g",
+    lifespan: "约 5-10 年",
+    habitatEnv: "农田、湿地、草地、滩涂",
+    distribution: "中国大部分地区，繁殖于北方，越冬于南方",
+    migration: "候鸟（中长距离迁徙）",
+    diet: "昆虫、蚯蚓、小型甲壳动物、螺",
+    feedingMethod: "在地面行走觅食，用脚踩踏地面惊出昆虫",
+    appearance: "头顶有细长向后弯曲的黑色冠羽，体背绿色带紫色光泽，腹部白色",
+    call: "哀怨的「pee-wit」声，飞行时持续鸣叫",
+    behavior: "成群活动，繁殖期有空中翻滚求偶表演，护巢性强",
+    threats: ["农业集约化导致繁殖地丧失", "湿地减少", "农药影响食物"],
+    protection: ["列入国家「三有」保护动物名录", "农田生态保护", "湿地保护"],
+    protectedAreas: "农田湿地、沿海滩涂",
+    monitoring: "图像识别、繁殖地调查",
+    description: "凤头麦鸡因头顶修长上翘的冠羽而得名，是农田湿地中最常见的鸻类之一。它们的求偶飞行表演优美，护巢时甚至会俯冲攻击入侵者，是性格鲜明的鸟种。"
+  },
+
+  /* ===== 国家一级重点保护鸟类（核心保护对象）===== */
   {
     id: "zhuhuan",
     name: "朱鹮",
     pinyin: "zhū huán",
     englishName: "Crested Ibis",
     scientificName: "Nipponia nippon",
-    type: "ibis",
-    colors: { bg: "#E8A0A0", body: "#8B5A5A", accent: "#D99A3D", light: "#FFF5E6" },
     habitat: ["湿地", "稻田", "山区溪流"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
@@ -224,38 +468,7 @@ const BIRDS_DATA = [
     protection: ["国家一级保护动物", "朱鹮国家级自然保护区", "人工繁育与野化放归", "生态农业推广"],
     protectedAreas: "陕西洋县朱鹮保护区",
     monitoring: "个体追踪、AI 图像识别、种群遗传分析",
-    aiApplications: ["图像识别", "智能监测", "种群分析"],
     description: "朱鹮曾一度被认为野外灭绝，1981 年在陕西洋县重新发现 7 只个体，经过 40 余年的保护，种群已恢复至数千只。这是中国乃至全球最成功的濒危物种保护案例之一。"
-  },
-  {
-    id: "dongfangbaiguan",
-    name: "东方白鹳",
-    pinyin: "dōng fāng bái guàn",
-    englishName: "Oriental White Stork",
-    scientificName: "Ciconia boyciana",
-    type: "water",
-    colors: { bg: "#5D8C83", body: "#2A3A35", accent: "#D99A3D", light: "#FFFFFF" },
-    habitat: ["湿地", "沼泽", "河口"],
-    protectionLevel: 1,
-    protectionLabel: "国家一级",
-    classification: { order: "鹳形目", family: "鹳科" },
-    bodySize: "约 110-128 cm",
-    weight: "约 4-5 kg",
-    lifespan: "约 20-30 年",
-    habitatEnv: "开阔湿地、沼泽、河口、湖泊浅水区",
-    distribution: "繁殖于中国东北及俄罗斯远东，越冬于长江中下游",
-    migration: "候鸟（长距离迁徙）",
-    diet: "鱼、蛙、昆虫、小型爬行动物",
-    feedingMethod: "在浅水中缓步行走，用嘴快速啄击捕获猎物",
-    appearance: "体型大，黑白配色，嘴黑色粗壮，腿红色，飞行时颈腿伸直",
-    call: "成鸟通常不发声，通过上下嘴击打发出「嗒嗒」声交流",
-    behavior: "营巢于高大乔木或电线塔，对巢址有很强的忠诚度，年复一年使用同一巢",
-    threats: ["湿地面积锐减", "巢树被砍伐", "农药和重金属污染", "迁徙途中非法猎杀"],
-    protection: ["国家一级保护动物", "湿地保护与恢复", "人工巢架建设", "迁徙路线国际合作"],
-    protectedAreas: "三江平原湿地、鄱阳湖湿地",
-    monitoring: "卫星追踪、AI 图像识别、红外相机监测、无人机巡查",
-    aiApplications: ["图像识别", "智能监测", "无人机监测"],
-    description: "东方白鹳是大型涉禽，全球种群约 7000-9000 只。它们对湿地环境要求极高，是湿地生态系统的旗舰物种。保护东方白鹳就是保护整个湿地生态系统。"
   },
   {
     id: "dandinghe",
@@ -263,8 +476,6 @@ const BIRDS_DATA = [
     pinyin: "dān dǐng hè",
     englishName: "Red-crowned Crane",
     scientificName: "Grus japonensis",
-    type: "crane",
-    colors: { bg: "#8BAC92", body: "#2A3A35", accent: "#C75450", light: "#FFFFFF" },
     habitat: ["湿地", "沼泽", "芦苇荡"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
@@ -284,38 +495,61 @@ const BIRDS_DATA = [
     protection: ["国家一级保护动物", "扎龙、盐城等自然保护区", "人工繁育与野化放归", "冬季投食补饲"],
     protectedAreas: "扎龙自然保护区、盐城湿地保护区",
     monitoring: "卫星追踪、AI 声音识别、图像识别、种群调查",
-    aiApplications: ["图像识别", "声音识别", "智能监测", "种群分析"],
     description: "丹顶鹤是东亚文化中象征长寿和忠贞的鸟类，全球野生种群约 2800 只。它们的迁徙路线连接中国东北与长江下游，是湿地保护的核心物种。"
   },
   {
-    id: "zhonghuaqiushaya",
-    name: "中华秋沙鸭",
-    pinyin: "zhōng huá qiū shā yā",
-    englishName: "Scaly-sided Merganser",
-    scientificName: "Mergus squamatus",
-    type: "duck",
-    colors: { bg: "#4A6B5F", body: "#2A3A45", accent: "#D99A3D", light: "#F5F3EA" },
-    habitat: ["山区河流", "溪流", "湖泊"],
+    id: "heilianpilu",
+    name: "黑脸琵鹭",
+    pinyin: "hēi liǎn pí lù",
+    englishName: "Black-faced Spoonbill",
+    scientificName: "Platalea minor",
+    habitat: ["湿地", "滩涂", "河口"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
-    classification: { order: "雁形目", family: "鸭科" },
-    bodySize: "约 52-58 cm",
-    weight: "约 0.6-1 kg",
-    lifespan: "约 10-15 年",
-    habitatEnv: "流速较快的山区河流、溪流、清澈湖泊",
-    distribution: "繁殖于长白山、小兴安岭，越冬于长江中下游",
-    migration: "候鸟（中距离迁徙）",
-    diet: "小鱼、水生昆虫、虾、蛙",
-    feedingMethod: "潜水追捕鱼类，在水下灵活游动",
-    appearance: "雄鸟头具绿色金属光泽冠羽，体侧有鳞状纹，嘴细长红色，雌鸟头棕灰色",
-    call: "较少鸣叫，繁殖期雄鸟发出低沉喉音",
-    behavior: "营巢于树洞（天然树洞），善于潜水，性情警觉",
-    threats: ["河流栖息地退化", "水坝建设阻断迁徙", "水体污染", "非法捕猎"],
-    protection: ["国家一级保护动物", "河流生态保护", "人工巢箱计划", "水质保护"],
-    protectedAreas: "长白山保护区、鄱阳湖保护区",
-    monitoring: "红外相机监测、AI 图像识别、河流调查",
-    aiApplications: ["图像识别", "智能监测"],
-    description: "中华秋沙鸭是第三纪冰川期残遗物种，被称为「鸟中大熊猫」，全球种群约 2400-4500 只。它们对水质要求极高，是河流生态系统健康的指示物种。"
+    classification: { order: "鹈形目", family: "鹮科" },
+    bodySize: "约 74-85 cm",
+    weight: "约 1.5-2 kg",
+    lifespan: "约 15-20 年",
+    habitatEnv: "沿海湿地、滩涂、河口、红树林",
+    distribution: "东亚沿海地区，繁殖于朝鲜半岛，越冬于中国南方、台湾、越南等",
+    migration: "候鸟（长距离迁徙）",
+    diet: "小鱼、虾、蟹、水生昆虫",
+    feedingMethod: "用匙形嘴在水中左右扫动觅食",
+    appearance: "面部裸露呈黑色，嘴呈匙形，全身白色，繁殖期头部有黄色冠羽",
+    call: "较少鸣叫，繁殖期发出低沉的咕咕声",
+    behavior: "成群活动，觅食时群体协作，用特有的扫食方式在浅水中觅食",
+    threats: ["沿海开发导致栖息地丧失", "环境污染", "人为干扰", "气候变化影响潮间带"],
+    protection: ["国家一级保护动物", "东亚-澳大利西亚迁徙路线保护", "关键湿地保护"],
+    protectedAreas: "盐城湿地、深圳福田红树林、台湾曾文溪口",
+    monitoring: "卫星追踪、AI 图像识别、种群调查",
+    description: "黑脸琵鹭是全球濒危水鸟之一，因其面部黑色、嘴形如琵琶而得名。全球种群约 7000 只（2024 年普查数据），是东亚-澳大利西亚迁徙路线上最重要的保护物种之一。"
+  },
+  {
+    id: "dongfangbaiguan",
+    name: "东方白鹳",
+    pinyin: "dōng fāng bái guàn",
+    englishName: "Oriental White Stork",
+    scientificName: "Ciconia boyciana",
+    habitat: ["湿地", "沼泽", "河口"],
+    protectionLevel: 1,
+    protectionLabel: "国家一级",
+    classification: { order: "鹳形目", family: "鹳科" },
+    bodySize: "约 110-128 cm",
+    weight: "约 4-5 kg",
+    lifespan: "约 20-30 年",
+    habitatEnv: "开阔湿地、沼泽、河口、湖泊浅水区",
+    distribution: "繁殖于中国东北及俄罗斯远东，越冬于长江中下游",
+    migration: "候鸟（长距离迁徙）",
+    diet: "鱼、蛙、昆虫、小型爬行动物",
+    feedingMethod: "在浅水中缓步行走，用嘴快速啄击捕获猎物",
+    appearance: "体型大，黑白配色，嘴黑色粗壮，腿红色，飞行时颈腿伸直",
+    call: "成鸟通常不发声，通过上下嘴击打发出「嗒嗒」声交流",
+    behavior: "营巢于高大乔木或电线塔，对巢址有很强的忠诚度，年复一年使用同一巢",
+    threats: ["湿地面积锐减", "巢树被砍伐", "农药和重金属污染", "迁徙途中非法猎杀"],
+    protection: ["国家一级保护动物", "湿地保护与恢复", "人工巢架建设", "迁徙路线国际合作"],
+    protectedAreas: "三江平原湿地、鄱阳湖湿地",
+    monitoring: "卫星追踪、AI 图像识别、红外相机监测、无人机巡查",
+    description: "东方白鹳是大型涉禽，全球种群约 7000-9000 只。它们对湿地环境要求极高，是湿地生态系统的旗舰物种。保护东方白鹳就是保护整个湿地生态系统。"
   },
   {
     id: "baihe",
@@ -323,8 +557,6 @@ const BIRDS_DATA = [
     pinyin: "bái hè",
     englishName: "Siberian Crane",
     scientificName: "Leucogeranus leucogeranus",
-    type: "crane",
-    colors: { bg: "#A0B8A8", body: "#3A4A45", accent: "#C75450", light: "#FFFFFF" },
     habitat: ["湿地", "沼泽", "浅水湖泊"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
@@ -344,7 +576,6 @@ const BIRDS_DATA = [
     protection: ["国家一级保护动物", "鄱阳湖国家级保护区", "国际迁徙路线保护合作", "水位调控管理"],
     protectedAreas: "鄱阳湖保护区、莫莫格保护区",
     monitoring: "卫星追踪、AI 图像识别、声音识别、种群调查",
-    aiApplications: ["图像识别", "声音识别", "智能监测", "种群分析"],
     description: "白鹤是全球极危物种，全球种群约 4000 只，其中 99% 的个体在鄱阳湖越冬。它们的迁徙路线跨越西伯利亚与中国，是国际保护合作的典范。"
   },
   {
@@ -353,8 +584,6 @@ const BIRDS_DATA = [
     pinyin: "hēi guàn",
     englishName: "Black Stork",
     scientificName: "Ciconia nigra",
-    type: "water",
-    colors: { bg: "#3A4A45", body: "#1A2A25", accent: "#D99A3D", light: "#F5F3EA" },
     habitat: ["山区河流", "湿地", "水库"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
@@ -374,8 +603,144 @@ const BIRDS_DATA = [
     protection: ["国家一级保护动物", "河流生态保护", "巢址保护", "减少人为干扰"],
     protectedAreas: "太行山保护区、六盘山保护区",
     monitoring: "红外相机监测、AI 图像识别、巢址巡查",
-    aiApplications: ["图像识别", "智能监测"],
     description: "黑鹳被称为「鸟中大熊猫」，中国境内种群约 1000 只。它们营巢于悬崖峭壁，觅食于山区溪流，对栖息环境要求苛刻，是河流生态系统的顶级指示物种。"
+  },
+  {
+    id: "zhonghuaqiushaya",
+    name: "中华秋沙鸭",
+    pinyin: "zhōng huá qiū shā yā",
+    englishName: "Scaly-sided Merganser",
+    scientificName: "Mergus squamatus",
+    habitat: ["山区河流", "溪流", "湖泊"],
+    protectionLevel: 1,
+    protectionLabel: "国家一级",
+    classification: { order: "雁形目", family: "鸭科" },
+    bodySize: "约 52-58 cm",
+    weight: "约 0.6-1 kg",
+    lifespan: "约 10-15 年",
+    habitatEnv: "流速较快的山区河流、溪流、清澈湖泊",
+    distribution: "繁殖于长白山、小兴安岭，越冬于长江中下游",
+    migration: "候鸟（中距离迁徙）",
+    diet: "小鱼、水生昆虫、虾、蛙",
+    feedingMethod: "潜水追捕鱼类，在水下灵活游动",
+    appearance: "雄鸟头具绿色金属光泽冠羽，体侧有鳞状纹，嘴细长红色，雌鸟头棕灰色",
+    call: "较少鸣叫，繁殖期雄鸟发出低沉喉音",
+    behavior: "营巢于树洞（天然树洞），善于潜水，性情警觉",
+    threats: ["河流栖息地退化", "水坝建设阻断迁徙", "水体污染", "非法捕猎"],
+    protection: ["国家一级保护动物", "河流生态保护", "人工巢箱计划", "水质保护"],
+    protectedAreas: "长白山保护区、鄱阳湖保护区",
+    monitoring: "红外相机监测、AI 图像识别、河流调查",
+    description: "中华秋沙鸭是第三纪冰川期残遗物种，被称为「鸟中大熊猫」，全球种群约 2400-4500 只。它们对水质要求极高，是河流生态系统健康的指示物种。"
+  },
+  {
+    id: "dabao",
+    name: "大鸨",
+    pinyin: "dà bǎo",
+    englishName: "Great Bustard",
+    scientificName: "Otis tarda",
+    habitat: ["草原", "农田"],
+    protectionLevel: 1,
+    protectionLabel: "国家一级",
+    classification: { order: "鸨形目", family: "鸨科" },
+    bodySize: "约 90-105 cm",
+    weight: "约 5-15 kg（雄鸟最重可达 18 kg）",
+    lifespan: "约 15-20 年",
+    habitatEnv: "开阔草原、半荒漠、农田",
+    distribution: "繁殖于东北、内蒙古草原，越冬于华北平原",
+    migration: "候鸟（中短距离迁徙）",
+    diet: "植物嫩芽、种子、昆虫、小型爬行动物",
+    feedingMethod: "在地面上行走觅食，杂食性",
+    appearance: "体型大，雄鸟喉部有长须状饰羽，头颈灰色，背部锈红色带黑斑，腹部白色",
+    call: "雄鸟繁殖期发出低沉的「moo」声，雌鸟通常沉默",
+    behavior: "在地上行走觅食，繁殖期雄鸟有夸张的「气球舞」求偶展示",
+    threats: ["草原开垦导致栖息地丧失", "农药和除草剂", "电线碰撞", "非法猎杀"],
+    protection: ["国家一级保护动物", "草原保护区建设", "农业友好型管理", "电线安全设计"],
+    protectedAreas: "内蒙古达里诺尔、华北平原越冬地",
+    monitoring: "卫星追踪、AI 图像识别、种群调查",
+    description: "大鸨是世界上最重的飞鸟，雄鸟体重可达 15 公斤以上。它们是草原生态系统的旗舰物种，因栖息地丧失和非法猎杀，中国境内种群已不足 2000 只，比大熊猫还稀少。"
+  },
+  {
+    id: "hemaji",
+    name: "褐马鸡",
+    pinyin: "hè mǎ jī",
+    englishName: "Brown Eared Pheasant",
+    scientificName: "Crossoptilon mantchuricum",
+    habitat: ["林地", "山区"],
+    protectionLevel: 1,
+    protectionLabel: "国家一级",
+    classification: { order: "鸡形目", family: "雉科" },
+    bodySize: "约 95-110 cm",
+    weight: "约 1.5-2.5 kg",
+    lifespan: "约 10-15 年",
+    habitatEnv: "华北山地针叶林、混交林",
+    distribution: "山西、河北西北部、北京西部山区（中国特有种）",
+    migration: "留鸟（不迁徙）",
+    diet: "植物根茎、块茎、种子、昆虫",
+    feedingMethod: "用强健的脚爪刨挖地面觅食",
+    appearance: "通体深褐色，耳羽白色向后延伸成「角」，尾羽长而松散，面部红色裸皮",
+    call: "雄鸟发出低沉的「gu-gu-gu」声，受惊时发出尖锐警报声",
+    behavior: "成小群活动，冬季集成大群，营巢于地面",
+    threats: ["森林砍伐导致栖息地破碎化", "非法盗猎", "种群隔离导致近亲繁殖"],
+    protection: ["国家一级保护动物", "建立专属保护区", "栖息地廊道修复", "人工繁育"],
+    protectedAreas: "山西庞泉沟、芦芽山保护区",
+    monitoring: "红外相机监测、AI 图像识别、种群调查",
+    description: "褐马鸡是中国特有珍禽，被称为「山西省鸟」。其尾羽在古代被用作武官冠饰（鹖冠），是勇武的象征。全球野生种群约 17000 只，全部依赖华北山地的森林栖息地生存。"
+  },
+
+  /* ===== 特色珍稀鸟类 ===== */
+  {
+    id: "hongfujinji",
+    name: "红腹锦鸡",
+    pinyin: "hóng fù jǐn jī",
+    englishName: "Golden Pheasant",
+    scientificName: "Chrysolophus pictus",
+    habitat: ["山区", "林地"],
+    protectionLevel: 2,
+    protectionLabel: "国家二级",
+    classification: { order: "鸡形目", family: "雉科" },
+    bodySize: "约 90-110 cm（含长尾）",
+    weight: "约 0.5-0.9 kg",
+    lifespan: "约 8-12 年",
+    habitatEnv: "山地针阔混交林、灌丛、竹林",
+    distribution: "中国中部、西南山区（中国特有种）",
+    migration: "留鸟（不迁徙）",
+    diet: "植物嫩芽、种子、浆果、昆虫",
+    feedingMethod: "在林下地面刨食，也会跳上低枝觅食",
+    appearance: "雄鸟羽色极其华丽，头顶金色冠羽，腹部鲜红色，背部金色带黑斑，尾长而黑黄相间",
+    call: "雄鸟发出低沉的「cha-cha-cha」声，受惊时尖锐报警",
+    behavior: "性机警，常单独或成对活动，雄鸟有华丽的求偶展示",
+    threats: ["森林砍伐", "非法盗猎", "栖息地破碎化"],
+    protection: ["国家二级保护动物", "森林保护", "禁止非法盗猎", "生态旅游规范"],
+    protectedAreas: "秦岭保护区、岷山保护区",
+    monitoring: "红外相机监测、AI 图像识别",
+    description: "红腹锦鸡是中国特有种，雄鸟的华丽羽色堪称「神鸟」，被认为是神话中「凤凰」的原型之一。它们是山地森林的隐秘精灵，仅分布在中国中西部的深山密林中。"
+  },
+  {
+    id: "yuanyang",
+    name: "鸳鸯",
+    pinyin: "yuān yāng",
+    englishName: "Mandarin Duck",
+    scientificName: "Aix galericulata",
+    habitat: ["山区河流", "湖泊", "林地溪流"],
+    protectionLevel: 2,
+    protectionLabel: "国家二级",
+    classification: { order: "雁形目", family: "鸭科" },
+    bodySize: "约 41-49 cm",
+    weight: "约 428-693 g",
+    lifespan: "约 8-12 年",
+    habitatEnv: "山地森林中的溪流、湖泊、水库",
+    distribution: "繁殖于中国东北、日本，越冬于中国南方",
+    migration: "候鸟（中长距离迁徙）",
+    diet: "植物种子、果实、昆虫、小鱼、螺",
+    feedingMethod: "在水面滤食或在水中倒立觅食，也会上岸啄食",
+    appearance: "雄鸟羽色华丽，有橙色直立「帆状饰羽」；雌鸟灰褐色，眼圈白色",
+    call: "雄鸟发出口哨般的「hwi-hwi」声，雌鸟发出低沉的「ket-ket」",
+    behavior: "营巢于树洞，雏鸟出壳后即从树洞跳入水中",
+    threats: ["森林砍伐导致树洞巢址减少", "水体污染", "非法捕猎"],
+    protection: ["国家二级保护动物", "森林溪流生态保护", "人工巢箱计划"],
+    protectedAreas: "长白山保护区、鄱阳湖保护区",
+    monitoring: "图像识别、繁殖地调查",
+    description: "鸳鸯在中国文化中象征爱情忠贞，传说中「止则相偶，飞则相双」。雄鸟的华丽羽色堪称东亚最美水鸟之一，但它们其实营巢于树洞，是典型的森林溪流鸭类。"
   },
   {
     id: "jindiao",
@@ -383,8 +748,6 @@ const BIRDS_DATA = [
     pinyin: "jīn diāo",
     englishName: "Golden Eagle",
     scientificName: "Aquila chrysaetos",
-    type: "raptor",
-    colors: { bg: "#7A6A4A", body: "#3A2A1A", accent: "#D99A3D", light: "#F5F3EA" },
     habitat: ["山区", "高原", "草原"],
     protectionLevel: 1,
     protectionLabel: "国家一级",
@@ -404,8 +767,61 @@ const BIRDS_DATA = [
     protection: ["国家一级保护动物", "禁止非法猎杀", "栖息地保护", "反毒饵行动"],
     protectedAreas: "阿尔金山保护区、羌塘保护区",
     monitoring: "无人机监测、AI 图像识别、红外相机、卫星追踪",
-    aiApplications: ["图像识别", "无人机监测", "智能监测"],
-    description: "金雕是北半球最强大的猛禽之一，翼展超过 2 米，飞行速度可达 300 公里/小时。它们是山地生态系统的顶级捕食者，对维持生态平衡具有不可替代的作用。"
+    description: "金雕是北半球最强大的猛禽之一，翼展超过 2 米，俯冲捕猎时速度可达 300 公里/小时。它们是山地生态系统的顶级捕食者，对维持生态平衡具有不可替代的作用。"
+  },
+  {
+    id: "heiyuan",
+    name: "黑鸢",
+    pinyin: "hēi yuān",
+    englishName: "Black Kite",
+    scientificName: "Milvus migrans",
+    habitat: ["城市", "湿地", "山区"],
+    protectionLevel: 2,
+    protectionLabel: "国家二级",
+    classification: { order: "鹰形目", family: "鹰科" },
+    bodySize: "约 47-58 cm",
+    weight: "约 0.6-1.2 kg",
+    lifespan: "约 15-20 年",
+    habitatEnv: "开阔平原、湿地、城市周边、河谷、山地",
+    distribution: "中国大部分地区",
+    migration: "部分迁徙（北方种群南迁越冬）",
+    diet: "鱼、小型动物、腐肉、昆虫、垃圾",
+    feedingMethod: "在空中盘旋发现猎物后俯冲捕食，常在水面掠取死鱼",
+    appearance: "体羽暗褐色，尾呈叉状（最显著特征），翼下有浅色斑块",
+    call: "颤抖的「pee-err」声，飞行时常发出",
+    behavior: "成群活动，常在垃圾场、港口、湿地盘旋，是适应人类环境的清道夫",
+    threats: ["二次中毒（鼠药、农药）", "高压电线触电", "非法猎杀"],
+    protection: ["国家二级保护动物", "禁止非法猎杀", "推广生态灭鼠", "电线安全设计"],
+    protectedAreas: "湿地保护区、城市周边山林",
+    monitoring: "图像识别、卫星追踪、种群调查",
+    description: "黑鸢是中国最常见的鹰类之一，以标志性的「叉状尾」和优雅的盘旋飞行著称。它们是自然界的清道夫，会清理腐肉和垃圾，对维持生态系统卫生具有重要作用。"
+  },
+  {
+    id: "changerxiao",
+    name: "长耳鸮",
+    pinyin: "cháng ěr xiāo",
+    englishName: "Long-eared Owl",
+    scientificName: "Asio otus",
+    habitat: ["林地", "城市", "公园"],
+    protectionLevel: 2,
+    protectionLabel: "国家二级",
+    classification: { order: "鸮形目", family: "鸱鸮科" },
+    bodySize: "约 35-40 cm",
+    weight: "约 220-340 g",
+    lifespan: "约 10-15 年",
+    habitatEnv: "针叶林、混交林、城市公园、墓地",
+    distribution: "中国大部分地区，繁殖于北方，越冬于南方",
+    migration: "部分迁徙（北方种群冬季南迁）",
+    diet: "鼠类、小型鸟类、大型昆虫",
+    feedingMethod: "夜间从栖木上俯冲捕食，依靠听觉定位鼠类",
+    appearance: "体羽棕褐色带纵纹，头部有长形耳簇（角羽），面盘明显，眼橙黄色",
+    call: "繁殖期雄鸟发出低沉的「hoo-hoo」声，雌鸟发出沙哑叫声",
+    behavior: "夜行性，白天静伏树枝上伪装，常成群越冬于同一林地",
+    threats: ["鼠药二次中毒", "古树减少导致巢址不足", "夜间光污染"],
+    protection: ["国家二级保护动物", "禁止非法猎杀", "古树保护", "推广生态灭鼠"],
+    protectedAreas: "城市公园、林地保护区",
+    monitoring: "声音监测、图像识别、食团分析",
+    description: "长耳鸮是城市林地中常见的猫头鹰，因头部有长形耳簇而得名。它们是夜行性鼠类捕食高手，一只长耳鸮一年可捕食数百只鼠类，是天然的「灭鼠卫士」。"
   }
 ];
 
@@ -416,12 +832,8 @@ const PROTECTION_LEVELS = {
   3: { label: "三有保护动物", class: "tag-protection-3" }
 };
 
-// 获取鸟类 SVG
-function getBirdSVG(bird) {
-  return birdSVG(bird.type, bird.colors);
-}
-
 // 获取鸟类真实图片
+// 命名规则：assets/images/{bird.id}.jpeg
 function getBirdImage(bird) {
   return '<img src="assets/images/' + bird.id + '.jpeg" alt="' + bird.name + '" loading="lazy">';
 }
@@ -429,29 +841,6 @@ function getBirdImage(bird) {
 // 获取带拼音的鸟名（如：白头鹎（bái tóu bēi））
 function getBirdNameWithPinyin(bird) {
   return bird.pinyin ? bird.name + '（' + bird.pinyin + '）' : bird.name;
-}
-
-// 获取详情页背景 SVG
-function getBirdHeroSVG(bird) {
-  const colors = bird.colors;
-  return `<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="hero-bg-${bird.id}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${colors.body}" stop-opacity="0.95"/>
-        <stop offset="100%" stop-color="${colors.bg}" stop-opacity="0.85"/>
-      </linearGradient>
-      <radialGradient id="hero-glow-${bird.id}" cx="70%" cy="30%" r="50%">
-        <stop offset="0%" stop-color="${colors.accent}" stop-opacity="0.15"/>
-        <stop offset="100%" stop-color="${colors.accent}" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <rect width="1200" height="400" fill="url(#hero-bg-${bird.id})"/>
-    <rect width="1200" height="400" fill="url(#hero-glow-${bird.id})"/>
-    <g opacity="0.08" transform="translate(800, 80) scale(3)">
-      ${birdSVG(bird.type, { bg: 'transparent', body: colors.light, accent: colors.accent, light: colors.light })
-        .replace(/<svg[^>]*>/, '').replace(/<\/svg>/, '').replace(/<rect[^>]*>/g, '').replace(/<defs>[\s\S]*?<\/defs>/g, '')}
-    </g>
-  </svg>`;
 }
 
 // 按条件筛选鸟类
