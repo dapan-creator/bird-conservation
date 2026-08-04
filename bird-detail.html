@@ -8,9 +8,22 @@
   <style>
     body { padding-top: calc(var(--nav-height) + 44px) !important; }
 
-    .detail-hero { margin-top: 0 !important; min-height: 380px; }
-    .detail-hero-bg svg { width: 100%; height: 100%; }
-    .detail-hero-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .detail-hero {
+      margin-top: 0 !important;
+      min-height: 0 !important;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      aspect-ratio: 1 / 1;
+      background: var(--bg3);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      position: relative;
+    }
+    .detail-hero-bg { position: absolute; inset: 0; z-index: 0; }
+    .detail-hero-bg picture { display: block; width: 100%; height: 100%; }
+    .detail-hero-bg img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
     .detail-hero-content .container { padding: 0 24px; }
     .detail-hero-content .hero-back {

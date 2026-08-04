@@ -832,10 +832,13 @@ const PROTECTION_LEVELS = {
   3: { label: "三有保护动物", class: "tag-protection-3" }
 };
 
-// 获取鸟类真实图片
-// 命名规则：assets/images/{bird.id}.jpeg
+// 获取鸟类真实图片（WebP 优先 + JPEG 回退）
+// 命名规则：assets/images/{bird.id}.webp 和 {bird.id}.jpeg
 function getBirdImage(bird) {
-  return '<img src="assets/images/' + bird.id + '.jpeg" alt="' + bird.name + '" loading="lazy">';
+  return '<picture>' +
+    '<source srcset="assets/images/' + bird.id + '.webp" type="image/webp">' +
+    '<img src="assets/images/' + bird.id + '.jpeg" alt="' + bird.name + '" loading="lazy" width="600" height="600">' +
+  '</picture>';
 }
 
 // 获取带拼音的鸟名（如：白头鹎（bái tóu bēi））
