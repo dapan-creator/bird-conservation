@@ -605,7 +605,7 @@
     selectorBirds.forEach(bird => {
       const item = document.createElement('div');
       item.className = 'bird-selector-item';
-      item.innerHTML = getBirdImage(bird);
+      item.innerHTML = getBirdImage(bird, 'thumb');
       item.title = bird.name;
       item.addEventListener('click', () => {
         document.querySelectorAll('.bird-selector-item').forEach(i => i.classList.remove('selected'));

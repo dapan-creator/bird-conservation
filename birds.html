@@ -224,7 +224,7 @@
         }).join('');
         return '' +
           '<a href="bird-detail.html?id=' + bird.id + '" class="bird-card">' +
-            '<div class="bird-card-img">' + getBirdImage(bird) + '</div>' +
+            '<div class="bird-card-img">' + getBirdImage(bird, 'thumb') + '</div>' +
             '<div class="bird-card-body">' +
               '<h3>' + getBirdNameWithPinyin(bird) + '</h3>' +
               '<div class="bird-sci">' + bird.scientificName + '</div>' +

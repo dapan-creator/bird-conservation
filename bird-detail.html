@@ -341,6 +341,12 @@
         renderNotFound();
         return;
       }
+      /* 预加载 Hero 图（在渲染前提前发起请求） */
+      var preload = document.createElement('link');
+      preload.rel = 'preload';
+      preload.as = 'image';
+      preload.href = 'assets/images/' + id + '.webp';
+      document.head.appendChild(preload);
       renderBirdDetail(BIRDS_DATA[index], index);
     }
 

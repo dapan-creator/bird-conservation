@@ -834,10 +834,13 @@ const PROTECTION_LEVELS = {
 
 // 获取鸟类真实图片（WebP 优先 + JPEG 回退）
 // 命名规则：assets/images/{bird.id}.webp 和 {bird.id}.jpeg
-function getBirdImage(bird) {
+// size: 'thumb' 用于列表卡片（480px 缩略图），'full' 用于详情页（1200px 原图）
+function getBirdImage(bird, size) {
+  var w = size === 'thumb' ? 480 : 1200;
+  var dir = size === 'thumb' ? 'assets/images/thumbs/' : 'assets/images/';
   return '<picture>' +
-    '<source srcset="assets/images/' + bird.id + '.webp" type="image/webp">' +
-    '<img src="assets/images/' + bird.id + '.jpeg" alt="' + bird.name + '" loading="lazy" width="600" height="600">' +
+    '<source srcset="' + dir + bird.id + '.webp" type="image/webp">' +
+    '<img src="' + dir + bird.id + '.jpeg" alt="' + bird.name + '" loading="lazy" width="' + w + '" height="' + w + '" onload="this.parentElement.classList.add(\'loaded\')">' +
   '</picture>';
 }
 
