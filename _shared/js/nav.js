@@ -125,14 +125,37 @@ function initCommon(activePage, activeStory) {
     footerPlaceholder.innerHTML = renderFooter();
   }
 
-  // 导航栏滚动效果
+  // 注入返回顶部按钮
+  if (!document.getElementById('backToTop')) {
+    const backToTop = document.createElement('button');
+    backToTop.id = 'backToTop';
+    backToTop.className = 'back-to-top';
+    backToTop.setAttribute('aria-label', '返回顶部');
+    backToTop.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    document.body.appendChild(backToTop);
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // 导航栏滚动效果 + 返回顶部按钮显隐
   const navBar = document.getElementById('navBar');
-  if (navBar) {
+  const backToTopBtn = document.getElementById('backToTop');
+  if (navBar || backToTopBtn) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 20) {
-        navBar.classList.add('scrolled');
-      } else {
-        navBar.classList.remove('scrolled');
+      if (navBar) {
+        if (window.scrollY > 20) {
+          navBar.classList.add('scrolled');
+        } else {
+          navBar.classList.remove('scrolled');
+        }
+      }
+      if (backToTopBtn) {
+        if (window.scrollY > window.innerHeight * 0.8) {
+          backToTopBtn.classList.add('show');
+        } else {
+          backToTopBtn.classList.remove('show');
+        }
       }
     });
   }
@@ -141,13 +164,21 @@ function initCommon(activePage, activeStory) {
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
   if (navToggle && navLinks) {
-    navToggle.addEventListener('click', () => {
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       navLinks.classList.toggle('open');
     });
+    // 点击菜单内链接后自动关闭
+    navLinks.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+    // 点击外部关闭
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+        navLinks.classList.remove('open');
+      }
+    });
   }
-
-  // 为 body 添加顶部间距
-  document.body.style.paddingTop = 'var(--nav-height)';
 }
 
 // 获取 URL 参数

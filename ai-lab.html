@@ -4,7 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI 实验室 | 模拟 AI 识别飞鸟</title>
+  <meta name="description" content="在线模拟 AI 识别飞鸟：上传图片识鸟、听声音识鸟、观看 AI 识别过程可视化与 AI 保护工作流。">
+  <meta name="theme-color" content="#2F5D50">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="_shared/css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI 实验室 - 模拟 AI 识别飞鸟">
+  <meta property="og:description" content="在线模拟 AI 识别飞鸟：图片识鸟、声音识鸟、识别过程可视化。">
+  <meta property="og:image" content="favicon.svg">
   <style>
     body { padding-top: 0 !important; }
     .lab-hero {
@@ -815,6 +822,11 @@
     }
 
     // ===== AI 识别过程演示 =====
+    function otherBirdName(bird) {
+      const others = BIRDS_DATA.filter(b => b.id !== bird.id);
+      return others[Math.floor(Math.random() * others.length)].name;
+    }
+
     document.getElementById('runProcessBtn').addEventListener('click', function() {
       this.disabled = true;
       this.textContent = '⏳ 演示中...';
@@ -844,11 +856,6 @@
         btn.textContent = '▶ 再次演示';
       }, 2000);
     });
-
-    function otherBirdName(bird) {
-      const others = BIRDS_DATA.filter(b => b.id !== bird.id);
-      return others[Math.floor(Math.random() * others.length)].name;
-    }
 
     // ===== 工作流动画 =====
     const workflowSteps = [

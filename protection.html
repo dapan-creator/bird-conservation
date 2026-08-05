@@ -4,9 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>探索保护地 · AI × 飞鸟保护</title>
+  <meta name="description" content="鸟为什么需要保护地？6 种保护地类型、14 个中国重点鸟类保护地、湿地生态系统详解、保护地面临的威胁与 AI 保护引导。">
+  <meta name="theme-color" content="#2F5D50">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://webrd01.is.autonavi.com">
+  <link rel="preconnect" href="https://webrd02.is.autonavi.com">
   <link rel="stylesheet" href="_shared/css/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     /* ===== 页面专属样式（不修改共享 CSS） ===== */
 
@@ -970,6 +975,7 @@
 
   <script src="_shared/js/birds-data.js"></script>
   <script src="_shared/js/nav.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // 初始化公共组件
     initCommon('protection', 1);
@@ -1090,7 +1096,7 @@
       return (
         '<div class="protected-card" id="card-' + area.id + '" data-animate>' +
           '<div class="protected-card-img">' +
-            '<img src="' + area.image + '" alt="' + area.name + '" loading="lazy" onerror="this.style.display=\'none\';">' +
+            '<img src="' + area.image + '" alt="' + area.name + '" width="800" height="600" loading="lazy">' +
           '</div>' +
           '<div class="protected-card-body">' +
             '<div>' +
@@ -1113,6 +1119,13 @@
         '</div>'
       );
     }).join('');
+
+    // 图片加载失败时优雅降级为占位
+    cardsContainer.querySelectorAll('.protected-card-img img').forEach(img => {
+      img.addEventListener('error', function () {
+        this.parentElement.classList.add('img-failed');
+      });
+    });
   </script>
 </body>
 </html>

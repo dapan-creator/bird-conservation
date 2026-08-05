@@ -4,106 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI × 飞鸟保护 | AI 赋能飞鸟保护科普网站</title>
+  <meta name="description" content="AI 如何帮助保护飞鸟：图像识别、声音识别、智能相机、无人机监测、数据分析五大场景，配合鄱阳湖、扎龙等真实案例。">
+  <meta name="theme-color" content="#2F5D50">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="_shared/css/style.css">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI × 飞鸟保护">
+  <meta property="og:description" content="AI 如何帮助保护飞鸟：图像识别、声音识别、智能相机、无人机监测、数据分析。">
+  <meta property="og:image" content="favicon.svg">
   <style>
     /* 覆盖 initCommon 设置的 body padding，改用内容区 margin-top */
     body { padding-top: 0 !important; }
-
-    /* ---- 页面 Hero ---- */
-    .page-hero {
-      margin-top: calc(var(--nav-height) + 44px);
-      position: relative;
-      padding: 96px 0 88px;
-      background: linear-gradient(135deg, #1a3a2e 0%, #2F5D50 50%, #3a6b5c 100%);
-      overflow: hidden;
-    }
-    .page-hero .hero-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
-    .page-hero .hero-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 20% 80%, rgba(217, 154, 61, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(93, 140, 131, 0.3) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-    }
-    .page-hero-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      color: #fff;
-      animation: fadeInUp 1s ease-out;
-    }
-    .page-hero-content .section-tag {
-      color: var(--accent-light);
-      margin-bottom: 16px;
-    }
-    .page-hero-content h1 {
-      color: #fff;
-      margin-bottom: 16px;
-      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-    }
-    .page-hero-content .hero-subtitle {
-      font-size: clamp(1rem, 2.5vw, 1.25rem);
-      color: rgba(255, 255, 255, 0.85);
-      max-width: 620px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-    /* ---- 水平流程管线 ---- */
-    .pipeline {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      margin: 36px 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 8px;
-    }
-    .pipeline-step {
-      flex: 1 1 0;
-      min-width: 118px;
-      background: var(--bg2);
-      border-radius: var(--radius-sm);
-      padding: 20px 12px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--ink);
-      transition: var(--transition);
-    }
-    .pipeline-step:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-3px);
-    }
-    .pipeline-step .pipe-emoji {
-      font-size: 1.9rem;
-      display: block;
-      margin-bottom: 10px;
-      line-height: 1;
-    }
-    .pipeline-step .pipe-sub {
-      display: block;
-      font-size: 0.76rem;
-      font-weight: 500;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .pipeline-arrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 1.6rem;
-      padding: 0 6px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
 
     /* ---- 数据统计卡 ---- */
     .stat-row {
